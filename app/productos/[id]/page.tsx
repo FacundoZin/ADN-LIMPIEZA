@@ -28,7 +28,7 @@ export async function generateMetadata({
 
   return {
     title: `${product.name} - Limpieza Profesional`,
-    description: product.description,
+    description: product.shortDescription || product.longDescription,
   };
 }
 
@@ -69,9 +69,9 @@ export default async function ProductoPage({
         </Button>
 
         {/* Product Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20 items-start">
           {/* Product Image */}
-          <div className="aspect-square relative overflow-hidden rounded-xl bg-muted">
+          <div className="lg:col-span-5 aspect-square relative overflow-hidden rounded-2xl bg-muted shadow-sm">
             {imageUrl ? (
               <img
                 src={imageUrl || "/placeholder.svg"}
@@ -86,26 +86,28 @@ export default async function ProductoPage({
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col">
-            {category && (
-              <Badge variant="secondary" className="w-fit mb-4">
-                <Tag className="mr-1 h-3 w-3" />
-                {category.name}
-              </Badge>
-            )}
+          <div className="flex flex-col lg:col-span-7 space-y-8">
+            <div>
+              {category && (
+                <Badge variant="secondary" className="w-fit mb-4 px-3 py-1">
+                  <Tag className="mr-1 h-3 w-3" />
+                  {category.name}
+                </Badge>
+              )}
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-balance">
-              {product.name}
-            </h1>
+              <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-balance tracking-tight text-foreground/90">
+                {product.name}
+              </h1>
 
-            <div className="prose prose-lg max-w-none mb-8">
-              <p className="text-lg text-muted-foreground leading-relaxed text-pretty">
-                {product.description}
-              </p>
+              <div className="prose prose-lg max-w-none prose-neutral dark:prose-invert">
+                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {product.longDescription}
+                </p>
+              </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <div className="flex flex-col sm:flex-row gap-4">
               <WhatsAppButton
                 message={WHATSAPP_MESSAGES.product(product.name)}
                 size="lg"

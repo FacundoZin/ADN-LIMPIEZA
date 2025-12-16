@@ -9,7 +9,7 @@ export interface Product {
   _type: "product";
   name: string;
   shortDescription?: string;
-  description: string;
+  longDescription?: string;
   image?: {
     asset: {
       _ref: string;
