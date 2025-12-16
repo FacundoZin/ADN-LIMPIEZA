@@ -1,199 +1,130 @@
 import Link from "next/link"
-import { MapPin, Phone, Mail, Clock, Sparkles } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight } from "lucide-react"
 import { WhatsAppButton } from "@/components/whatsapp-button"
+
+const navigation = [
+  { name: "Inicio", href: "/" },
+  { name: "Productos", href: "/productos" },
+  { name: "Nosotros", href: "/sobre-nosotros" },
+]
+
+const contactInfo = [
+  { icon: Phone, label: "Teléfono", value: "+54 9 11 1234-5678" },
+  { icon: Mail, label: "Email", value: "info@adnlimpieza.com" },
+  { icon: MapPin, label: "Ubicación", value: "Buenos Aires, Argentina" },
+]
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-muted border-t">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
-          {/* Company Info */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg">
+    <footer className="relative bg-muted/30 border-t border-border/50">
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
+          
+          {/* Brand Column */}
+          <div className="lg:col-span-5">
+            <Link href="/" className="inline-flex items-center gap-3 group mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-soft group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
                 <Sparkles className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl">Limpieza Pro</span>
-            </div>
-            <p className="text-sm text-muted-foreground mb-6 text-pretty leading-relaxed">
-              Más de 15 años brindando soluciones de limpieza profesional para hogares y negocios.
+              <span className="font-semibold text-xl tracking-tight group-hover:text-primary transition-colors">
+                ADN Limpieza
+              </span>
+            </Link>
+            
+            <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
+              Más de 15 años brindando soluciones de limpieza profesional. 
+              Productos de calidad que realmente cumplen sus promesas.
             </p>
-            <WhatsAppButton
-              variant="outline"
-              size="sm"
-              className="shadow-md hover:shadow-lg hover:scale-105 transition-all"
+            
+            <WhatsAppButton 
+              size="lg"
+              className="shadow-soft hover:shadow-glow transition-all duration-300"
             >
-              Contactar
+              Contactar por WhatsApp
             </WhatsAppButton>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold mb-5 text-lg">Enlaces Rápidos</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/"
-                  className="text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1 inline-block"
-                >
-                  → Inicio
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/productos"
-                  className="text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1 inline-block"
-                >
-                  → Productos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/sobre-nosotros"
-                  className="text-sm text-muted-foreground hover:text-primary transition-all hover:translate-x-1 inline-block"
-                >
-                  → Sobre Nosotros
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="font-semibold mb-5 text-lg">Contacto</h3>
+          {/* Links Column */}
+          <div className="lg:col-span-3">
+            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
+              Navegación
+            </h3>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-sm text-muted-foreground group">
-                <Phone className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-                <span className="group-hover:text-primary transition-colors">+54 9 11 1234-5678</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-muted-foreground group">
-                <Mail className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-                <span className="group-hover:text-primary transition-colors">info@limpiezapro.com</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-muted-foreground group">
-                <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-                <span className="group-hover:text-primary transition-colors">
-                  Av. Principal 123, Buenos Aires, Argentina
-                </span>
-              </li>
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                  >
+                    <span>{item.name}</span>
+                    <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Hours & Map */}
-          <div>
-            <h3 className="font-semibold mb-5 text-lg">Horario</h3>
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start gap-3 text-sm text-muted-foreground">
-                <Clock className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-                <div className="leading-relaxed">
-                  <p className="font-medium">Lun - Vie: 9:00 - 18:00</p>
-                  <p>Sábados: 9:00 - 13:00</p>
+          {/* Contact Column */}
+          <div className="lg:col-span-4">
+            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
+              Contacto
+            </h3>
+            <ul className="space-y-4">
+              {contactInfo.map((info) => {
+                const Icon = info.icon
+                return (
+                  <li key={info.label} className="flex items-start gap-3 group">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors duration-300">
+                      <Icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">{info.label}</p>
+                      <p className="font-medium">{info.value}</p>
+                    </div>
+                  </li>
+                )
+              })}
+              
+              {/* Hours */}
+              <li className="flex items-start gap-3 group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors duration-300">
+                  <Clock className="w-5 h-5 text-primary" />
                 </div>
-              </div>
-            </div>
-            <Link
-              href="/sobre-nosotros#mapa"
-              className="text-sm text-primary hover:underline inline-flex items-center gap-2 font-medium hover:gap-3 transition-all"
-            >
-              <MapPin className="h-4 w-4" />
-              Ver en mapa
-            </Link>
+                <div>
+                  <p className="text-sm text-muted-foreground">Horario</p>
+                  <p className="font-medium">Lun - Vie: 9:00 - 18:00</p>
+                  <p className="text-sm text-muted-foreground">Sáb: 9:00 - 13:00</p>
+                </div>
+              </li>
+            </ul>
           </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground text-center md:text-left">
-              © {currentYear} Limpieza Pro. Todos los derechos reservados.
-            </p>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="#" className="hover:text-primary transition-colors hover:underline">
-                Términos
-              </Link>
-              <Link href="#" className="hover:text-primary transition-colors hover:underline">
-                Privacidad
-              </Link>
-            </div>
-          </div>
+          
         </div>
       </div>
 
-      {/* Google Maps Embed - Compact Layout */}
-      <div className="border-t bg-muted/30">
-        <div className="container mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            {/* Contact Info Column */}
-            <div className="space-y-6">
-              <div>
-                <h3 className="font-semibold text-2xl mb-2">Encuéntranos</h3>
-                <p className="text-muted-foreground text-sm">
-                  Visítanos en nuestra ubicación o contáctanos por cualquiera de estos medios
-                </p>
-              </div>
-
-              <div className="space-y-4 bg-background p-6 rounded-xl border shadow-sm">
-                <div className="flex items-start gap-4 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <MapPin className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Dirección</p>
-                    <p className="text-sm text-muted-foreground">Av. Principal 123, Buenos Aires, Argentina</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Phone className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Teléfono</p>
-                    <p className="text-sm text-muted-foreground">+54 9 11 1234-5678</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Mail className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Email</p>
-                    <p className="text-sm text-muted-foreground">info@limpiezapro.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Clock className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Horarios</p>
-                    <p className="text-sm text-muted-foreground">Lun - Vie: 9:00 - 18:00</p>
-                    <p className="text-sm text-muted-foreground">Sábados: 9:00 - 13:00</p>
-                  </div>
-                </div>
-              </div>
-
-              <WhatsAppButton size="lg" className="w-full shadow-lg">
-                Contactar por WhatsApp
-              </WhatsAppButton>
-            </div>
-
-            {/* Map Column */}
-            <div className="h-[400px] rounded-xl overflow-hidden shadow-xl border-2">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52563.68896911965!2d-58.44534889999999!3d-34.6037389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcca3b4ef90cbd%3A0xa0b3812e88e88e10!2sBuenos%20Aires%2C%20Argentina!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación del negocio"
-              ></iframe>
+      {/* Bottom Bar */}
+      <div className="border-t border-border/50">
+        <div className="container mx-auto px-4 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground">
+              © {currentYear} ADN Limpieza. Todos los derechos reservados.
+            </p>
+            <div className="flex gap-6 text-sm text-muted-foreground">
+              <Link 
+                href="#" 
+                className="hover:text-foreground transition-colors duration-300"
+              >
+                Términos
+              </Link>
+              <Link 
+                href="#" 
+                className="hover:text-foreground transition-colors duration-300"
+              >
+                Privacidad
+              </Link>
             </div>
           </div>
         </div>

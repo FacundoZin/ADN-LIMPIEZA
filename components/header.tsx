@@ -3,141 +3,191 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Sparkles } from "lucide-react"
+import { Menu, X, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { WhatsAppButton } from "@/components/whatsapp-button"
-
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { getAllCategories } from "@/lib/sanity/queries"
-import type { Category } from "@/lib/sanity/types"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 
 const navigation = [
   { name: "Inicio", href: "/" },
   { name: "Productos", href: "/productos" },
-  { name: "Sobre Nosotros", href: "/sobre-nosotros" },
+  { name: "Nosotros", href: "/sobre-nosotros" },
 ]
 
 export function Header() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+      setIsScrolled(window.scrollY > 10)
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getAllCategories()
-        setCategories(data)
-      } catch (error) {
-        console.error("Error fetching categories:", error)
-      }
-    }
-    fetchCategories()
   }, [])
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isScrolled
-          ? "bg-background/80 backdrop-blur-xl shadow-lg"
-          : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          ? "py-3 glass border-b border-border/50 shadow-soft"
+          : "py-4 bg-transparent"
       )}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between">
+          
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl group">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
+          <Link 
+            href="/" 
+            className="flex items-center gap-3 group"
+          >
+            <div className={cn(
+              "relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+              "bg-gradient-to-br from-primary to-primary/80",
+              "shadow-soft group-hover:shadow-glow group-hover:scale-105"
+            )}>
               <Sparkles className="h-5 w-5 text-primary-foreground" />
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-            <span className="hidden sm:inline-block group-hover:text-primary transition-colors">Limpieza Pro</span>
+            <div className="hidden sm:block">
+              <span className={cn(
+                "font-semibold text-lg tracking-tight transition-colors duration-300",
+                isScrolled ? "text-foreground" : "text-foreground",
+                "group-hover:text-primary"
+              )}>
+                ADN Limpieza
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "relative px-4 py-2 text-sm font-medium transition-all rounded-md",
-                  "hover:text-primary hover:bg-secondary/50",
-                  pathname === item.href ? "text-primary bg-secondary" : "text-muted-foreground",
-                )}
-              >
-                {item.name}
-                {pathname === item.href && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-primary rounded-full" />
-                )}
-              </Link>
-            ))}
-
+          <nav className="hidden md:flex items-center">
+            <div className={cn(
+              "flex items-center gap-1 p-1.5 rounded-full transition-all duration-300",
+              isScrolled ? "bg-muted/50" : "bg-background/50 backdrop-blur-sm"
+            )}>
+              {navigation.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "relative px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
+                      isActive
+                        ? "text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    {/* Active background pill */}
+                    {isActive && (
+                      <span className="absolute inset-0 rounded-full bg-primary shadow-sm" />
+                    )}
+                    <span className="relative z-10">{item.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
           </nav>
 
-          <div className="hidden md:flex items-center gap-2">
-            <ThemeToggle />
-          </div>
+          {/* Right side actions */}
+          <div className="flex items-center gap-2">
+            {/* Desktop actions */}
+            <div className="hidden md:flex items-center gap-2">
+              <ThemeToggle />
+              <WhatsAppButton 
+                size="sm" 
+                className="shadow-soft hover:shadow-glow transition-shadow duration-300"
+              >
+                <span className="hidden lg:inline">Contactar</span>
+              </WhatsAppButton>
+            </div>
 
-          {/* Mobile Menu */}
-          <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
-            <WhatsAppButton variant="ghost" size="icon" className="h-9 w-9">
-              <span className="sr-only">Contactar por WhatsApp</span>
-            </WhatsAppButton>
+            {/* Mobile actions */}
+            <div className="flex md:hidden items-center gap-2">
+              <ThemeToggle />
+              
+              <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={cn(
+                      "h-10 w-10 rounded-xl transition-all duration-300",
+                      isScrolled ? "" : "bg-background/50 backdrop-blur-sm"
+                    )}
+                  >
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Abrir menú</span>
+                  </Button>
+                </SheetTrigger>
+                
+                <SheetContent 
+                  side="right" 
+                  className="w-full sm:w-[400px] p-0 border-l border-border/50"
+                >
+                  <div className="flex flex-col h-full">
+                    {/* Mobile menu header */}
+                    <SheetHeader className="p-6 border-b border-border/50">
+                      <SheetTitle className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-soft">
+                            <Sparkles className="h-5 w-5 text-primary-foreground" />
+                          </div>
+                          <span className="font-semibold text-lg">ADN Limpieza</span>
+                        </div>
+                      </SheetTitle>
+                    </SheetHeader>
 
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Abrir menú</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-primary-foreground" />
+                    {/* Navigation links */}
+                    <nav className="flex-1 p-6 space-y-2">
+                      {navigation.map((item, index) => {
+                        const isActive = pathname === item.href
+                        return (
+                          <SheetClose asChild key={item.href}>
+                            <Link
+                              href={item.href}
+                              className={cn(
+                                "flex items-center gap-4 px-4 py-4 rounded-2xl text-lg font-medium transition-all duration-300",
+                                "animate-slide-in-right",
+                                isActive
+                                  ? "bg-primary text-primary-foreground shadow-soft"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                              )}
+                              style={{ animationDelay: `${index * 75}ms` }}
+                            >
+                              {item.name}
+                            </Link>
+                          </SheetClose>
+                        )
+                      })}
+                    </nav>
+
+                    {/* Mobile menu footer */}
+                    <div className="p-6 border-t border-border/50 space-y-4">
+                      <WhatsAppButton 
+                        size="lg" 
+                        className="w-full shadow-soft hover:shadow-glow"
+                      >
+                        Contactar por WhatsApp
+                      </WhatsAppButton>
+                      
+                      <p className="text-center text-sm text-muted-foreground">
+                        +15 años de experiencia
+                      </p>
                     </div>
-                    Limpieza Pro
-                  </SheetTitle>
-                </SheetHeader>
-                <nav className="flex flex-col gap-4 mt-8">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={cn(
-                        "text-lg font-medium transition-colors hover:text-primary px-4 py-3 rounded-lg",
-                        pathname === item.href
-                          ? "text-primary bg-secondary border-l-4 border-primary"
-                          : "text-muted-foreground hover:bg-secondary/50",
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                  <div className="px-4">
-
                   </div>
-                  <div className="pt-4 border-t">
-                    <WhatsAppButton className="w-full">Contactar por WhatsApp</WhatsAppButton>
-                  </div>
-                </nav>
-              </SheetContent>
-            </Sheet>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
+          
         </div>
       </div>
     </header>
