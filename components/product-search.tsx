@@ -2,9 +2,22 @@
 
 import { useState, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search, X, Loader2 } from "lucide-react"
+import { Search, X, Loader2, Check, ChevronsUpDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import type { Category } from "@/lib/sanity/types"
 import { cn } from "@/lib/utils"
 
@@ -19,6 +32,7 @@ export function ProductSearch({ categories }: ProductSearchProps) {
 
   const [search, setSearch] = useState(searchParams.get("search") || "")
   const [category, setCategory] = useState(searchParams.get("category") || "all")
+  const [open, setOpen] = useState(false)
 
   const handleSearch = () => {
     startTransition(() => {
@@ -31,12 +45,18 @@ export function ProductSearch({ categories }: ProductSearchProps) {
     })
   }
 
-  const handleCategoryChange = (categoryId: string) => {
-    setCategory(categoryId)
+  const handleCategoryChange = (currentValue: string) => {
+    // If clicking the already selected category, don't toggle it off, just keep it.
+    // Or if we want toggle behavior: currentValue === category ? "all" : currentValue
+    // But typically a combobox selects exactly what you click.
+    const newCategory = currentValue
+    setCategory(newCategory)
+    setOpen(false)
+    
     startTransition(() => {
       const params = new URLSearchParams()
       if (search) params.set("search", search)
-      if (categoryId !== "all") params.set("category", categoryId)
+      if (newCategory !== "all") params.set("category", newCategory)
 
       const queryString = params.toString()
       router.push(`/productos${queryString ? `?${queryString}` : ""}`)
@@ -52,92 +72,125 @@ export function ProductSearch({ categories }: ProductSearchProps) {
   }
 
   const hasFilters = search || category !== "all"
+  const selectedCategoryName = categories.find((c) => c._id === category)?.name || "Todas las categorías"
 
   return (
-    <div className="sticky top-20 z-40 -mx-4 px-4 py-6 mb-8 bg-background/80 backdrop-blur-xl border-b border-border/50">
+    <div className="-mx-4 px-4 py-8 mb-4 mt-4">
       <div className="container-wide">
-        <div className="flex flex-col gap-6">
+        
+        {/* Unified Search Bar */}
+        <div className="flex flex-col md:flex-row gap-3 justify-center items-center w-full max-w-4xl mx-auto">
           
-          {/* Search Input Row */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1 max-w-xl">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-              <Input
-                type="text"
-                placeholder="Buscar productos..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className={cn(
-                  "pl-12 pr-4 h-12 rounded-xl",
-                  "bg-muted/50 border-border/50",
-                  "focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20",
-                  "transition-all duration-300"
-                )}
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleSearch} 
-                disabled={isPending}
-                className="h-12 px-6 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300"
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Buscando...
-                  </>
-                ) : (
-                  "Buscar"
-                )}
-              </Button>
-              
-              {hasFilters && (
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleClearFilters} 
-                  disabled={isPending}
-                  className="h-12 w-12 rounded-xl"
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Limpiar filtros</span>
-                </Button>
+          {/* Search Input */}
+          <div className="relative flex-1 w-full md:w-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Buscar productos..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className={cn(
+                "pl-10 pr-4 h-11 rounded-full text-sm",
+                "bg-muted/50 border-border/50",
+                "focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20",
+                "transition-all duration-300"
               )}
-            </div>
+            />
           </div>
 
-          {/* Category Chips */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleCategoryChange("all")}
-              className={cn(
-                "px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-                category === "all"
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                  : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Todos
-            </button>
-            
-            {categories.map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => handleCategoryChange(cat._id)}
+          {/* Category Combobox */}
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
                 className={cn(
-                  "px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
-                  category === cat._id
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                    : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                  "w-full md:w-[240px] h-11 justify-between rounded-full border-border/50 bg-muted/50 hover:bg-background hover:border-primary/50 transition-all duration-300",
+                  category !== "all" && "border-primary text-primary bg-primary/5"
                 )}
               >
-                {cat.name}
-              </button>
-            ))}
-          </div>
+                <span className="truncate text-sm font-normal">
+                   {category === "all" ? "Todas las categorías" : selectedCategoryName}
+                </span>
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[240px] p-0 rounded-xl" align="end">
+              <Command>
+                <CommandInput placeholder="Buscar categoría..." />
+                <CommandList>
+                  <CommandEmpty>No se encontraron categorías.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandItem
+                      value="all"
+                      onSelect={() => handleCategoryChange("all")}
+                      className="cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          category === "all" ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      Todas las categorías
+                    </CommandItem>
+                    {categories.map((cat) => (
+                      <CommandItem
+                        key={cat._id}
+                        value={cat.name} // Command uses value for search filtering usually, but we want ID for logic. 
+                        // Actually CommandItem value is what is searchable. Layout: name.
+                        // We need to pass a callback to handleCategoryChange with ID.
+                        onSelect={() => handleCategoryChange(cat._id)}
+                        className="cursor-pointer"
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            category === cat._id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {cat.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
           
+          {/* Actions */}
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button 
+              onClick={handleSearch} 
+              disabled={isPending}
+              className="h-11 px-6 rounded-full shadow-soft hover:shadow-glow transition-all duration-300 w-full md:w-auto"
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Buscando
+                </>
+              ) : (
+                "Buscar"
+              )}
+            </Button>
+            
+            {hasFilters && (
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={handleClearFilters} 
+                disabled={isPending}
+                className="h-11 w-11 rounded-full shrink-0 border-border/50"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Limpiar filtros</span>
+              </Button>
+            )}
+          </div>
+
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ export async function getAllProducts(): Promise<Product[]> {
     _id,
     _type,
     name,
+    shortDescription,
     description,
     image,
     category
@@ -20,6 +21,7 @@ export async function getProductsWithCategories(): Promise<Product[]> {
     _id,
     _type,
     name,
+    shortDescription,
     description,
     image,
     "category": category->{
@@ -36,6 +38,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     _id,
     _type,
     name,
+    shortDescription,
     description,
     image,
     "category": category->{
@@ -52,6 +55,7 @@ export async function searchProducts(searchTerm: string): Promise<Product[]> {
     _id,
     _type,
     name,
+    shortDescription,
     description,
     image,
     "category": category->{
@@ -70,6 +74,7 @@ export async function getProductsByCategory(
     _id,
     _type,
     name,
+    shortDescription,
     description,
     image,
     "category": category->{
