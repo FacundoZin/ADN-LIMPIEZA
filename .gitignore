@@ -1,0 +1,30 @@
+# Dependencias
+/node_modules
+/npm-debug.log
+/yarn-error.log
+
+# Build e Output
+/.next/
+/out/
+
+# Archivos de entorno y configuración local
+.env
+.env.local
+.env.production
+.env.development
+
+# Archivos de sistema y caché
+.DS_Store
+.vscode/
+.idea/
+
+# Archivos de build específicos de React (si los hay)
+build/
+
+# Logs y archivos temporales
+*.log
+*.tmp
+
+# Archivos generados por Next.js
+# (Aunque .next/ ya está cubierto, puede haber otros)
+next.config.js.timestamp
