@@ -62,7 +62,7 @@ export default async function ProductoPage({
       <div className="container mx-auto px-4">
 
         {/* Product Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
           {/* Product Image */}
           <div className="lg:col-span-5 aspect-square relative overflow-hidden rounded-2xl bg-muted shadow-sm">
             {imageUrl ? (
@@ -79,7 +79,7 @@ export default async function ProductoPage({
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col lg:col-span-7 space-y-8">
+          <div className="flex flex-col lg:col-span-7 h-full">
             <div>
               <div className="flex items-center justify-between mb-6">
                 {category ? (
@@ -109,8 +109,9 @@ export default async function ProductoPage({
               </div>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* CTA Buttons & Features */}
+            <div className="mt-auto space-y-8 pt-8">
+              <div className="flex flex-col sm:flex-row gap-4">
               <WhatsAppButton
                 message={WHATSAPP_MESSAGES.product(product.name)}
                 size="lg"
@@ -123,34 +124,38 @@ export default async function ProductoPage({
               </Button>
             </div>
 
-            {/* Product Features */}
-            <Card className="mt-8">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-4">
-                  Características del producto
-                </h3>
-                <ul className="space-y-3 text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary mt-1">✓</span>
-                    <span>Calidad profesional garantizada</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary mt-1">✓</span>
-                    <span>Fórmula efectiva y segura</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary mt-1">✓</span>
-                    <span>Resultados visibles desde el primer uso</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary mt-1">✓</span>
-                    <span>Ideal para uso doméstico y profesional</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+            {/* Product Features moved below */}
+            </div>
           </div>
         </div>
+
+        {/* Product Features */}
+        <Card className="mt-12 mb-8 border-none shadow-sm bg-muted/30">
+          <CardContent className="p-6">
+            <h3 className="font-semibold text-lg mb-4">
+              Características del producto
+            </h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-muted-foreground text-sm sm:text-base">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1 min-w-[1rem]">✓</span>
+                <span>Calidad profesional garantizada</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1 min-w-[1rem]">✓</span>
+                <span>Fórmula efectiva y segura</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1 min-w-[1rem]">✓</span>
+                <span>Resultados visibles desde el primer uso</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1 min-w-[1rem]">✓</span>
+                <span>Ideal para uso doméstico y profesional</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
