@@ -58,15 +58,8 @@ export default async function ProductoPage({
     .slice(0, 4);
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen pb-12 pt-28 lg:pt-32">
       <div className="container mx-auto px-4">
-        {/* Back Button */}
-        <Button variant="ghost" asChild className="mb-8">
-          <Link href="/productos">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver a Productos
-          </Link>
-        </Button>
 
         {/* Product Details */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20 items-start">
@@ -88,12 +81,22 @@ export default async function ProductoPage({
           {/* Product Info */}
           <div className="flex flex-col lg:col-span-7 space-y-8">
             <div>
-              {category && (
-                <Badge variant="secondary" className="w-fit mb-4 px-3 py-1">
-                  <Tag className="mr-1 h-3 w-3" />
-                  {category.name}
-                </Badge>
-              )}
+              <div className="flex items-center justify-between mb-6">
+                {category ? (
+                  <Badge variant="secondary" className="w-fit px-3 py-1">
+                    <Tag className="mr-1 h-3 w-3" />
+                    {category.name}
+                  </Badge>
+                ) : <div />}
+
+                <Link 
+                  href="/productos" 
+                  className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  Volver a Productos
+                  <ArrowLeft className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 rotate-180" />
+                </Link>
+              </div>
 
               <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-balance tracking-tight text-foreground/90">
                 {product.name}
