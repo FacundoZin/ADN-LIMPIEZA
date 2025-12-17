@@ -3,7 +3,7 @@ import Image from "next/image"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getHomeCarouselImages } from "@/lib/sanity/queries"
 import { urlFor } from "@/lib/sanity/client"
-import { Sparkles, Shield, Clock, Award, ArrowRight, Truck, CheckCircle2 } from "lucide-react"
+import { Sparkles, Shield, Clock, Award, ArrowRight, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -144,8 +144,9 @@ export default async function HomePage() {
               
               {/* Subheadline */}
               <p className="body-lg text-muted-foreground mb-10 text-pretty">
-                Productos profesionales para hogares y negocios que exigen 
-                resultados excepcionales. Calidad sin compromisos.
+                En ADN LIMPIEZA brindamos el asesoramiento necesario para que puedas elegirla mejor combinación de productos y técnicas de limpieza.
+                
+                
               </p>
               
               {/* CTA Buttons */}
@@ -192,31 +193,13 @@ export default async function HomePage() {
                 <ImageCarousel images={images} />
               </div>
               
-              {/* Floating Card - Shipping Info */}
+              {/* Floating Card - Satisfaction */}
               <div className={cn(
                 "absolute -bottom-4 -left-4 p-4",
                 "bg-card/95 backdrop-blur-xl rounded-2xl",
                 "border border-border/50 shadow-soft-lg",
                 "animate-float"
               )}>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                    <Truck className="w-6 h-6 text-success" />
-                  </div>
-                  <div>
-                    <div className="font-semibold">Envío a todo el país</div>
-                    <div className="text-sm text-muted-foreground">Entrega en 24-72hs</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating Card - Satisfaction */}
-              <div className={cn(
-                "absolute -top-4 -right-4 p-4",
-                "bg-card/95 backdrop-blur-xl rounded-2xl",
-                "border border-border/50 shadow-soft-lg",
-                "animate-float"
-              )} style={{ animationDelay: "1s" }}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                     <CheckCircle2 className="w-5 h-5 text-primary" />
