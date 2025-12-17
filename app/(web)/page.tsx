@@ -60,11 +60,11 @@ const features = [
   {
     icon: Clock,
     title: "Entrega Rápida",
-    description: "Recibe tus productos en tiempo récord con nuestro servicio express.",
+    description: "Recibi tus productos rapidamente con nuestro servicio de entrega a domicilio",
   },
   {
     icon: Award,
-    title: "15+ Años",
+    title: "+15 Años",
     description: "Más de una década brindando soluciones de limpieza profesional.",
   },
 ]
@@ -277,10 +277,10 @@ export default async function HomePage() {
                     className="object-contain p-2"
                   />
                 </div>
-                <h3 className="heading-xl mb-4">Productos de Calidad Superior</h3>
+                <h3 className="heading-xl mb-4">Productos de Calidad</h3>
                 <p className="body-md opacity-90 max-w-lg text-pretty">
                   Seleccionamos únicamente productos que cumplen los más altos 
-                  estándares internacionales. Tu satisfacción está garantizada.
+                  estándares. Tu satisfacción está garantizada.
                 </p>
               </div>
             </div>

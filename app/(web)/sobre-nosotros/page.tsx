@@ -51,13 +51,13 @@ const values = [
   },
   {
     icon: Users,
-    title: "Compromiso",
-    description: "Estamos comprometidos con la satisfacción de nuestros clientes y la mejora continua de nuestros servicios.",
+    title: "Asesoramiento",
+    description: "Asesoramos a nuestros clientes para que puedan obtener los mejores resultados con nuestros productos y servicios.",
   },
   {
     icon: Heart,
-    title: "Confianza",
-    description: "Construimos relaciones duraderas basadas en la transparencia, honestidad y respeto mutuo.",
+    title: "Compromiso",
+    description: "Estamos comprometidos con la satisfacción de nuestros clientes y la mejora continua de nuestros servicios.",
   },
 ]
 
@@ -179,7 +179,7 @@ export default async function SobreNosotrosPage() {
             {/* Section header */}
             <div className="text-center mb-16 animate-fade-up">
               <span className="badge-primary mb-6">Nuestra Trayectoria</span>
-              <h2 className="display-lg">15+ años de crecimiento</h2>
+              <h2 className="display-lg">+15 años de crecimiento</h2>
             </div>
             
             {/* Timeline */}

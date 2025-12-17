@@ -97,32 +97,12 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Links Column */}
-          <div className="lg:col-span-3">
-            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
-              Navegación
-            </h3>
-            <ul className="space-y-4">
-              {navigation.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="group inline-flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors duration-300"
-                  >
-                    <span>{item.name}</span>
-                    <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Contact Column */}
           <div className="lg:col-span-4">
             <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
               Contacto
             </h3>
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-4">
               {contactInfo.map((info) => {
                 const Icon = info.icon
                 return (
@@ -150,25 +130,47 @@ export function Footer() {
                 </div>
               </li>
             </ul>
+          </div>
 
-            {/* Map Embed */}
-            {!isAboutPage && (
-              <div className="relative rounded-2xl overflow-hidden shadow-soft border border-border/50 h-48 lg:h-56 group mt-4">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="grayscale hover:grayscale-0 transition-all duration-700"
-                />
-              </div>
-            )}
+          {/* Links Column */}
+          <div className="lg:col-span-3">
+            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
+              Navegación
+            </h3>
+            <ul className="space-y-4">
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                  >
+                    <span>{item.name}</span>
+                    <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
           
         </div>
+
+        {/* Map Embed - Centered Section */}
+        {!isAboutPage && (
+          <div className="mt-12 max-w-4xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden shadow-soft border border-border/50 h-48 lg:h-64 group">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Bar */}
