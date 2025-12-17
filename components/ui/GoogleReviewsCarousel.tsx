@@ -20,6 +20,10 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(3)
   const [mounted, setMounted] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+  const minSwipeDistance = 50
 
   useEffect(() => {
     setMounted(true)
@@ -44,6 +48,28 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
     setCurrentIndex((prev) => (prev === totalPages - 1 ? 0 : prev + 1))
   }
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    if (isLeftSwipe) {
+      handleNext()
+    }
+    if (isRightSwipe) {
+      handlePrevious()
+    }
+  }
+
   const startIndex = currentIndex * itemsPerPage
   const visibleReviews = reviews.slice(startIndex, startIndex + itemsPerPage)
 
@@ -64,7 +90,12 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
   if (!mounted) return null
 
   return (
-    <div className="relative">
+    <div 
+      className="relative"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Previous Button */}
       <button
         onClick={handlePrevious}
