@@ -2,9 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, DM_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { FloatingWhatsApp } from "@/components/floating-whatsapp"
 import "./globals.css"
 
 const inter = Inter({ 
@@ -52,10 +49,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <body className={`${inter.variable} ${dmSans.variable} font-sans antialiased`}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <FloatingWhatsApp />
+        {children}
         <Analytics />
       </body>
     </html>

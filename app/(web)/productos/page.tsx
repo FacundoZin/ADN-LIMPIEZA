@@ -25,7 +25,7 @@ export default async function ProductosPage({
   const filteredProducts = products.filter((product) => {
     const matchesSearch = search
       ? product.name.toLowerCase().includes(search.toLowerCase()) ||
-        product.description.toLowerCase().includes(search.toLowerCase())
+        (product.shortDescription ?? "").toLowerCase().includes(search.toLowerCase())
       : true
 
     const matchesCategory = category && category !== "all" 
