@@ -6,6 +6,42 @@ import { Sparkles, Shield, Clock, Award, ArrowRight, Truck, CheckCircle2 } from 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { GoogleReviewsCarousel } from "@/components/ui/GoogleReviewsCarousel"
+
+const mockReviews = [
+  {
+    id: "1",
+    author: "Ana G.",
+    initials: "AG",
+    rating: 5,
+    text: "Excelente calidad en todos los productos, san cimpla!",
+    avatarColor: "#3b82f6"
+  },
+  {
+    id: "2",
+    author: "Carlos S.",
+    initials: "CS",
+    rating: 5,
+    text: "Excelente calidad en todos mihos, mi hogar estuva tan Funciona muy bien.",
+    avatarColor: "#ef4444"
+  },
+  {
+    id: "3",
+    author: "Juan P.",
+    initials: "JP",
+    rating: 4,
+    text: "Buenos productos, auarcu el envío tardo mara mi negecio de funcíntouen.",
+    avatarColor: "#10b981"
+  },
+  {
+    id: "4",
+    author: "Laura M.",
+    initials: "LM",
+    rating: 4,
+    text: "Súper recomnmable. La dejan nuis plisos nuevos. Atención al cliente de priera.",
+    avatarColor: "#f59e0b"
+  },
+];
 
 // Feature data for the bento grid
 const features = [
@@ -268,6 +304,11 @@ export default async function HomePage() {
               )
             })}
             
+          </div>
+
+          {/* Social Proof - Reviews */}
+          <div className="mt-20 stagger-children">
+            <GoogleReviewsCarousel reviews={mockReviews} />
           </div>
         </div>
       </section>
