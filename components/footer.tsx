@@ -3,9 +3,15 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight, Instagram, Facebook } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight, Instagram, Facebook, Globe } from "lucide-react"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { cn } from "@/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const navigation = [
   { name: "Inicio", href: "/" },
@@ -172,6 +178,73 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               © {currentYear} ADN Limpieza. Todos los derechos reservados.
             </p>
+
+            {/* Syntrax Credit */}
+            <div className="flex items-center gap-0.5 text-sm text-muted-foreground/60">
+              <span className="whitespace-nowrap translate-y-[1px]">desarrollado por:</span>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="https://syntrax-web.vercel.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative flex items-center transition-all duration-300 hover:scale-110 -ml-1"
+                    >
+                      <div className="relative w-42 h-16">
+                        <Image
+                          src="/LogoSyntrax.png"
+                          alt="Syntrax Logo"
+                          fill
+                          className="object-contain dark:invert dark:brightness-200 transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]"
+                        />
+                      </div>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent 
+                    side="top" 
+                    className="bg-card/95 backdrop-blur-xl border border-border/50 p-4 rounded-2xl shadow-soft-xl animate-in fade-in zoom-in duration-200"
+                  >
+                    <div className="flex flex-col gap-4 min-w-[200px]">
+                      <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] flex items-center justify-center shadow-lg shadow-pink-500/20">
+                          <Instagram className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-foreground">Syntrax Software</p>
+                          <a 
+                            href="https://www.instagram.com/syntrax.software/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline"
+                          >
+                            @syntrax.software
+                          </a>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Globe className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nuestra Web</p>
+                          <a 
+                            href="https://syntrax-web.vercel.app/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                          >
+                            syntrax.software
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
             <div className="flex gap-6 text-sm text-muted-foreground">
               <Link 
                 href="#" 
