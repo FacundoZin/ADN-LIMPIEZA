@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
-import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight, Instagram, Facebook } from "lucide-react"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { cn } from "@/lib/utils"
 
@@ -13,11 +16,18 @@ const navigation = [
 const contactInfo = [
   { icon: Phone, label: "Teléfono", value: "+54 9 11 1234-5678" },
   { icon: Mail, label: "Email", value: "info@adnlimpieza.com" },
-  { icon: MapPin, label: "Ubicación", value: "Buenos Aires, Argentina" },
+  { icon: MapPin, label: "Ubicación", value: "Libertad 1556, Buenos Aires" },
+]
+
+const socialLinks = [
+  { name: "Instagram", href: "https://www.instagram.com/adnlimpieza/", icon: Instagram },
+  { name: "Facebook", href: "https://www.facebook.com/adn.limpieza.77/", icon: Facebook },
 ]
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const pathname = usePathname()
+  const isAboutPage = pathname === "/sobre-nosotros"
 
   return (
     <footer className="relative bg-muted/30 border-t border-border/50">
@@ -54,10 +64,31 @@ export function Footer() {
             
             <WhatsAppButton 
               size="lg"
-              className="shadow-soft hover:shadow-glow transition-all duration-300"
+              className="shadow-soft hover:shadow-glow transition-all duration-300 mb-8"
             >
               Contactar por WhatsApp
             </WhatsAppButton>
+
+            <div className="flex gap-4">
+              {socialLinks.map((social) => {
+                const Icon = social.icon
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                      "bg-primary/10 text-primary hover:bg-primary hover:text-white shadow-soft"
+                    )}
+                    aria-label={social.name}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                )
+              })}
+            </div>
           </div>
 
           {/* Links Column */}
@@ -85,7 +116,7 @@ export function Footer() {
             <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
               Contacto
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-4 mb-8">
               {contactInfo.map((info) => {
                 const Icon = info.icon
                 return (
@@ -113,6 +144,22 @@ export function Footer() {
                 </div>
               </li>
             </ul>
+
+            {/* Map Embed */}
+            {!isAboutPage && (
+              <div className="relative rounded-2xl overflow-hidden shadow-soft border border-border/50 h-48 lg:h-56 group mt-4">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="grayscale hover:grayscale-0 transition-all duration-700"
+                />
+              </div>
+            )}
           </div>
           
         </div>

@@ -63,7 +63,7 @@ const values = [
 
 // Contact info
 const contactInfo = [
-  { icon: MapPin, title: "Ubicación", content: "Buenos Aires, Argentina" },
+  { icon: MapPin, title: "Ubicación", content: "Libertad 1556, Buenos Aires" },
   { icon: Phone, title: "Teléfono", content: "+54 9 11 1234-5678" },
   { icon: Mail, title: "Email", content: "info@adnlimpieza.com" },
   { icon: Clock, title: "Horario", content: "Lun - Vie: 9:00 - 18:00" },
@@ -357,6 +357,22 @@ export default async function SobreNosotrosPage() {
               >
                 Contactar por WhatsApp
               </WhatsAppButton>
+            </div>
+
+            {/* Map Section */}
+            <div className="mt-12 animate-fade-up" style={{ animationDelay: "200ms" }}>
+              <div className="relative rounded-3xl overflow-hidden shadow-soft-xl border border-border/50 aspect-[16/9] md:aspect-[21/9]">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="grayscale hover:grayscale-0 transition-all duration-700"
+                />
+              </div>
             </div>
             
           </div>
