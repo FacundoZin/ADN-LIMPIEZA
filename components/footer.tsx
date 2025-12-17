@@ -1,6 +1,8 @@
 import Link from "next/link"
+import Image from "next/image"
 import { MapPin, Phone, Mail, Clock, Sparkles, ArrowUpRight } from "lucide-react"
 import { WhatsAppButton } from "@/components/whatsapp-button"
+import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Inicio", href: "/" },
@@ -26,8 +28,19 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center gap-3 group mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-soft group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
-                <Sparkles className="h-6 w-6 text-primary-foreground" />
+              <div className={cn(
+                "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500",
+                "bg-gradient-to-br from-white/10 to-white/5",
+                "shadow-soft group-hover:shadow-glow group-hover:scale-110",
+                "border border-white/20 group-hover:border-primary/50"
+              )}>
+                <Image
+                  src="/ADN-Limpieza-logo-redondo.png"
+                  alt="ADN Limpieza Logo"
+                  fill
+                  className="object-cover transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]"
+                />
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               <span className="font-semibold text-xl tracking-tight group-hover:text-primary transition-colors">
                 ADN Limpieza

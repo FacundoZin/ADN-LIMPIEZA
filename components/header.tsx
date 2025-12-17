@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X, Sparkles } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -47,13 +48,20 @@ export function Header() {
             className="flex items-center gap-3 group"
           >
             <div className={cn(
-              "relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
-              "bg-gradient-to-br from-primary to-primary/80",
-              "shadow-soft group-hover:shadow-glow group-hover:scale-105"
+              "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500",
+              "bg-gradient-to-br from-white/10 to-white/5",
+              "shadow-soft group-hover:shadow-glow group-hover:scale-110",
+              "border border-white/20 group-hover:border-primary/50"
             )}>
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+              <Image
+                src="/ADN-Limpieza-logo-redondo.png"
+                alt="ADN Limpieza Logo"
+                fill
+                className="object-cover transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]"
+                priority
+              />
               {/* Subtle glow effect */}
-              <div className="absolute inset-0 rounded-xl bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
             <div className="hidden sm:block">
               <span className={cn(
@@ -137,8 +145,13 @@ export function Header() {
                     <SheetHeader className="p-6 border-b border-border/50">
                       <SheetTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-soft">
-                            <Sparkles className="h-5 w-5 text-primary-foreground" />
+                          <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-soft shrink-0">
+                            <Image
+                              src="/ADN-Limpieza-logo-redondo.png"
+                              alt="ADN Limpieza Logo"
+                              fill
+                              className="object-cover"
+                            />
                           </div>
                           <span className="font-semibold text-lg">ADN Limpieza</span>
                         </div>
