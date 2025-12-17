@@ -99,10 +99,10 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
       {/* Previous Button */}
       <button
         onClick={handlePrevious}
-        className="absolute -left-6 top-1/3 -translate-y-1/2 z-20 bg-white rounded-full p-3 shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all hidden lg:flex items-center justify-center"
+        className="absolute -left-6 top-1/3 -translate-y-1/2 z-20 bg-card rounded-full p-3 shadow-lg hover:shadow-xl hover:bg-accent transition-all hidden lg:flex items-center justify-center border border-border"
         aria-label="Previous reviews"
       >
-        <ChevronLeft size={24} className="text-gray-600" />
+        <ChevronLeft size={24} className="text-muted-foreground" />
       </button>
 
       {/* Reviews Grid */}
@@ -110,21 +110,21 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
         {visibleReviews.map((review) => (
           <div
             key={review.id}
-            className="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
+            className="bg-card rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition-shadow duration-300 border border-border/50"
           >
             {/* Star Rating */}
             <div className="mb-4 flex justify-between items-start">
               <div>{renderStars(review.rating)}</div>
-              <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+              <span className="text-sm font-semibold text-secondary-foreground bg-secondary px-2.5 py-1 rounded-full">
                 {review.rating}
               </span>
             </div>
 
             {/* Review Text */}
-            <p className="text-gray-800 text-sm mb-6 flex-grow leading-relaxed">{review.text}</p>
+            <p className="text-card-foreground text-sm mb-6 flex-grow leading-relaxed">{review.text}</p>
 
             {/* Author Details */}
-            <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+            <div className="flex items-center gap-3 pt-4 border-t border-border">
               {/* Avatar */}
               <div
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
@@ -135,8 +135,8 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
 
               {/* Author Info */}
               <div className="flex-grow">
-                <p className="font-semibold text-gray-900 text-sm">{review.author}</p>
-                <p className="text-gray-500 text-xs">author {review.initials}</p>
+                <p className="font-semibold text-foreground text-sm">{review.author}</p>
+                <p className="text-muted-foreground text-xs">author {review.initials}</p>
               </div>
             </div>
           </div>
@@ -146,10 +146,10 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
       {/* Next Button */}
       <button
         onClick={handleNext}
-        className="absolute -right-6 top-1/3 -translate-y-1/2 z-20 bg-white rounded-full p-3 shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all hidden lg:flex items-center justify-center"
+        className="absolute -right-6 top-1/3 -translate-y-1/2 z-20 bg-card rounded-full p-3 shadow-lg hover:shadow-xl hover:bg-accent transition-all hidden lg:flex items-center justify-center border border-border"
         aria-label="Next reviews"
       >
-        <ChevronRight size={24} className="text-gray-600" />
+        <ChevronRight size={24} className="text-muted-foreground" />
       </button>
 
       {/* Pagination Dots */}
@@ -159,7 +159,7 @@ export function GoogleReviewsCarousel({ reviews }: GoogleReviewsCarouselProps) {
             key={i}
             onClick={() => setCurrentIndex(i)}
             className={`rounded-full transition-all duration-300 ${
-              i === currentIndex ? "bg-gray-400 w-8 h-2.5" : "bg-gray-300 w-2.5 h-2.5 hover:bg-gray-400"
+              i === currentIndex ? "bg-primary w-8 h-2.5" : "bg-muted-foreground/30 w-2.5 h-2.5 hover:bg-primary/50"
             }`}
             aria-label={`Go to page ${i + 1}`}
             aria-current={i === currentIndex ? "true" : "false"}
