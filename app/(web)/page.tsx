@@ -1,4 +1,5 @@
 import { ImageCarousel } from "@/components/image-carousel"
+import Image from "next/image"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getHomeCarouselImages } from "@/lib/sanity/queries"
 import { urlFor } from "@/lib/sanity/client"
@@ -268,8 +269,13 @@ export default async function HomePage() {
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2" />
               
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
-                  <Sparkles className="w-7 h-7" />
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 relative overflow-hidden">
+                  <Image 
+                    src="/ADN-Limpieza-logo-redondo.png" 
+                    alt="ADN Limpieza Calidad" 
+                    fill
+                    className="object-contain p-2"
+                  />
                 </div>
                 <h3 className="heading-xl mb-4">Productos de Calidad Superior</h3>
                 <p className="body-md opacity-90 max-w-lg text-pretty">
