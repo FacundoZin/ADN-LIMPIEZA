@@ -8,7 +8,7 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import {
   getProductById,
   getProductsWithCategories,
-} from "@/lib/sanity/queries";
+} from "@/lib/db/queries";
 import { urlFor } from "@/lib/sanity/client";
 import { WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 
@@ -89,8 +89,8 @@ export default async function ProductoPage({
                   </Badge>
                 ) : <div />}
 
-                <Link 
-                  href="/productos" 
+                <Link
+                  href="/productos"
                   className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors group"
                 >
                   Volver a Productos
@@ -112,19 +112,19 @@ export default async function ProductoPage({
             {/* CTA Buttons & Features */}
             <div className="mt-auto space-y-8 pt-8">
               <div className="flex flex-col sm:flex-row gap-4">
-              <WhatsAppButton
-                message={WHATSAPP_MESSAGES.product(product.name)}
-                size="lg"
-                className="flex-1"
-              >
-                Consultar por WhatsApp
-              </WhatsAppButton>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/productos">Ver más productos</Link>
-              </Button>
-            </div>
+                <WhatsAppButton
+                  message={WHATSAPP_MESSAGES.product(product.name)}
+                  size="lg"
+                  className="flex-1"
+                >
+                  Consultar por WhatsApp
+                </WhatsAppButton>
+                <Button variant="outline" size="lg" asChild>
+                  <Link href="/productos">Ver más productos</Link>
+                </Button>
+              </div>
 
-            {/* Product Features moved below */}
+              {/* Product Features moved below */}
             </div>
           </div>
         </div>

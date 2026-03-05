@@ -41,10 +41,10 @@ export function Header() {
     >
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
-          
+
           {/* Logo */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center gap-3 group"
           >
             <div className={cn(
@@ -109,8 +109,8 @@ export function Header() {
             {/* Desktop actions */}
             <div className="hidden md:flex items-center gap-2">
               <ThemeToggle />
-              <WhatsAppButton 
-                size="sm" 
+              <WhatsAppButton
+                size="sm"
                 className="shadow-soft hover:shadow-glow transition-shadow duration-300"
               >
                 <span className="hidden lg:inline">Contactar</span>
@@ -120,12 +120,12 @@ export function Header() {
             {/* Mobile actions */}
             <div className="flex md:hidden items-center gap-2">
               <ThemeToggle />
-              
+
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className={cn(
                       "h-10 w-10 rounded-xl transition-all duration-300",
                       isScrolled ? "" : "bg-background/50 backdrop-blur-sm"
@@ -135,9 +135,9 @@ export function Header() {
                     <span className="sr-only">Abrir menú</span>
                   </Button>
                 </SheetTrigger>
-                
-                <SheetContent 
-                  side="right" 
+
+                <SheetContent
+                  side="right"
                   className="w-full sm:w-[400px] p-0 border-l border-border/50"
                 >
                   <div className="flex flex-col h-full">
@@ -184,15 +184,15 @@ export function Header() {
 
                     {/* Mobile menu footer */}
                     <div className="p-6 border-t border-border/50 space-y-4">
-                      <WhatsAppButton 
-                        size="lg" 
+                      <WhatsAppButton
+                        size="lg"
                         className="w-full shadow-soft hover:shadow-glow"
                       >
                         Contactar por WhatsApp
                       </WhatsAppButton>
-                      
+
                       <p className="text-center text-sm text-muted-foreground">
-                        +15 años de experiencia
+                        +20 años de experiencia
                       </p>
                     </div>
                   </div>
@@ -200,7 +200,7 @@ export function Header() {
               </Sheet>
             </div>
           </div>
-          
+
         </div>
       </div>
     </header>

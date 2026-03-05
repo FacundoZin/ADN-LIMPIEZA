@@ -1,48 +1,13 @@
-import { ImageCarousel } from "@/components/image-carousel"
 import Image from "next/image"
 import { WhatsAppButton } from "@/components/whatsapp-button"
-import { getHomeCarouselImages } from "@/lib/sanity/queries"
-import { urlFor } from "@/lib/sanity/client"
 import { Sparkles, Shield, Clock, Award, ArrowRight, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { GoogleReviewsCarousel } from "@/components/ui/GoogleReviewsCarousel"
+import { ElfsightReviews } from "@/components/elfsight-reviews"
+import { HeroImage } from "@/components/hero-image"
 
-const mockReviews = [
-  {
-    id: "1",
-    author: "Ana G.",
-    initials: "AG",
-    rating: 5,
-    text: "Excelente calidad en todos los productos, san cimpla!",
-    avatarColor: "#3b82f6"
-  },
-  {
-    id: "2",
-    author: "Carlos S.",
-    initials: "CS",
-    rating: 5,
-    text: "Excelente calidad en todos mihos, mi hogar estuva tan Funciona muy bien.",
-    avatarColor: "#ef4444"
-  },
-  {
-    id: "3",
-    author: "Juan P.",
-    initials: "JP",
-    rating: 4,
-    text: "Buenos productos, auarcu el envío tardo mara mi negecio de funcíntouen.",
-    avatarColor: "#10b981"
-  },
-  {
-    id: "4",
-    author: "Laura M.",
-    initials: "LM",
-    rating: 4,
-    text: "Súper recomnmable. La dejan nuis plisos nuevos. Atención al cliente de priera.",
-    avatarColor: "#f59e0b"
-  },
-];
+
 
 // Feature data for the bento grid
 const features = [
@@ -64,8 +29,8 @@ const features = [
   },
   {
     icon: Award,
-    title: "+15 Años",
-    description: "Más de una década brindando soluciones de limpieza profesional.",
+    title: "+20 Años",
+    description: "Más de dos décadas brindando soluciones de limpieza profesional.",
   },
 ]
 
@@ -73,58 +38,33 @@ const features = [
 const stats = [
   { value: "500+", label: "Clientes satisfechos" },
   { value: "150+", label: "Productos" },
-  { value: "15", label: "Años de experiencia" },
+  { value: "20", label: "Años de experiencia" },
 ]
 
-export default async function HomePage() {
-  // Obtener imágenes del carrusel desde Sanity
-  const carouselImages = await getHomeCarouselImages()
-
-  // Convertir las imágenes de Sanity al formato esperado por el carrusel
-  const images =
-    carouselImages.length > 0
-      ? carouselImages.map((img) => ({
-          src: urlFor(img.image).width(1920).height(1080).url(),
-          alt: img.title || "Imagen del negocio de limpieza",
-        }))
-      : [
-          {
-            src: "/professional-cleaning-service-team.jpg",
-            alt: "Equipo profesional de limpieza",
-          },
-          {
-            src: "/modern-cleaning-products-display.jpg",
-            alt: "Productos de limpieza modernos",
-          },
-          {
-            src: "/clean-and-organized-home.jpg",
-            alt: "Hogar limpio y organizado",
-          },
-        ]
-
+export default function HomePage() {
   return (
     <div className="min-h-screen">
-      
+
       {/* =========================================================================
           HERO SECTION - Split Layout Premium
           ========================================================================= */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
         {/* Background with subtle gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/30" />
-        
+
         {/* Subtle dot pattern for depth */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.03] pattern-dots text-foreground"
-          aria-hidden="true" 
+          aria-hidden="true"
         />
-        
+
         {/* Decorative gradient blobs */}
         <div className="absolute top-1/4 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" aria-hidden="true" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3" aria-hidden="true" />
-        
+
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            
+
             {/* Left Column - Content */}
             <div className="max-w-xl animate-fade-up">
               {/* Trust Badge */}
@@ -133,27 +73,27 @@ export default async function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-success" />
                 </span>
-                <span>+15 años de experiencia</span>
+                <span>+20 años de experiencia</span>
               </div>
-              
+
               {/* Main Headline */}
               <h1 className="display-2xl mb-6 text-balance">
                 Limpieza que{" "}
                 <span className="text-primary">inspira confianza</span>
               </h1>
-              
+
               {/* Subheadline */}
               <p className="body-lg text-muted-foreground mb-10 text-pretty">
                 En ADN LIMPIEZA brindamos el asesoramiento necesario para que puedas elegirla mejor combinación de productos y técnicas de limpieza.
-                
-                
+
+
               </p>
-              
+
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 mb-12">
-                <Button 
-                  size="lg" 
-                  asChild 
+                <Button
+                  size="lg"
+                  asChild
                   className="h-14 px-8 text-base rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 group"
                 >
                   <Link href="/productos">
@@ -167,11 +107,11 @@ export default async function HomePage() {
                   className="h-14 px-8 text-base rounded-xl border-2 hover:border-primary hover:text-primary transition-all duration-300"
                 />
               </div>
-              
+
               {/* Social Proof Stats */}
               <div className="flex flex-wrap gap-8 pt-8 border-t border-border/50">
                 {stats.map((stat, index) => (
-                  <div 
+                  <div
                     key={stat.label}
                     className="animate-fade-up"
                     style={{ animationDelay: `${300 + index * 100}ms` }}
@@ -182,17 +122,17 @@ export default async function HomePage() {
                 ))}
               </div>
             </div>
-            
+
             {/* Right Column - Visual */}
             <div className="relative hidden lg:block animate-fade-up" style={{ animationDelay: "200ms" }}>
               {/* Background glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-full blur-3xl" aria-hidden="true" />
-              
-              {/* Image Carousel Container */}
-              <div className="relative rounded-3xl overflow-hidden shadow-soft-xl border-2 border-white/20 dark:border-white/10">
-                <ImageCarousel images={images} />
+
+              {/* Hero Image / Slider */}
+              <div className="relative shadow-soft-xl border-2 border-white/20 dark:border-white/10 rounded-2xl overflow-hidden">
+                <HeroImage />
               </div>
-              
+
               {/* Floating Card - Satisfaction */}
               <div className={cn(
                 "absolute -bottom-4 -left-4 p-4",
@@ -211,12 +151,12 @@ export default async function HomePage() {
                 </div>
               </div>
             </div>
-            
-            {/* Mobile Carousel */}
-            <div className="lg:hidden relative rounded-2xl overflow-hidden shadow-soft-lg">
-              <ImageCarousel images={images} />
+
+            {/* Mobile Image */}
+            <div className="lg:hidden">
+              <HeroImage />
             </div>
-            
+
           </div>
         </div>
       </section>
@@ -226,7 +166,7 @@ export default async function HomePage() {
           ========================================================================= */}
       <section className="section-padding bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          
+
           {/* Section Header */}
           <div className="text-center mb-16 animate-fade-up">
             <div className="inline-flex items-center gap-4 mb-6">
@@ -236,10 +176,10 @@ export default async function HomePage() {
             </div>
             <h2 className="display-lg text-balance">¿Por qué elegirnos?</h2>
           </div>
-          
+
           {/* Bento Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
-            
+
             {/* Featured Card - Spans 2 columns */}
             <div className={cn(
               "lg:col-span-2 p-8 rounded-3xl relative overflow-hidden",
@@ -250,24 +190,24 @@ export default async function HomePage() {
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -translate-x-1/2 translate-y-1/2" />
-              
+
               <div className="relative z-10">
                 <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 relative overflow-hidden">
-                  <Image 
-                    src="/ADN-Limpieza-logo-redondo.png" 
-                    alt="ADN Limpieza Calidad" 
+                  <Image
+                    src="/ADN-Limpieza-logo-redondo.png"
+                    alt="ADN Limpieza Calidad"
                     fill
                     className="object-contain p-2"
                   />
                 </div>
                 <h3 className="heading-xl mb-4">Productos de Calidad</h3>
                 <p className="body-md opacity-90 max-w-lg text-pretty">
-                  Seleccionamos únicamente productos que cumplen los más altos 
+                  Seleccionamos únicamente productos que cumplen los más altos
                   estándares. Tu satisfacción está garantizada.
                 </p>
               </div>
             </div>
-            
+
             {/* Regular Feature Cards */}
             {features.slice(1).map((feature) => {
               const Icon = feature.icon
@@ -292,12 +232,12 @@ export default async function HomePage() {
                 </div>
               )
             })}
-            
+
           </div>
 
           {/* Social Proof - Reviews */}
           <div className="mt-20 stagger-children">
-            <GoogleReviewsCarousel reviews={mockReviews} />
+            <ElfsightReviews />
           </div>
         </div>
       </section>
@@ -308,18 +248,18 @@ export default async function HomePage() {
       <section className="section-padding relative overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80" />
-        
+
         {/* Decorative elements */}
         <div className="absolute top-10 right-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" aria-hidden="true" />
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" aria-hidden="true" />
-        
+
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           <div className="max-w-3xl mx-auto animate-fade-up">
             <h2 className="display-lg text-primary-foreground mb-6 text-balance">
               ¿Listo para transformar tu espacio?
             </h2>
             <p className="body-lg text-primary-foreground/90 mb-10 text-pretty">
-              Contáctanos hoy y descubre cómo nuestros productos pueden hacer 
+              Contáctanos hoy y descubre cómo nuestros productos pueden hacer
               la diferencia en tu hogar o negocio.
             </p>
             <WhatsAppButton
@@ -338,7 +278,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      
+
     </div>
   )
 }

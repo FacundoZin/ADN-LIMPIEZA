@@ -1,9 +1,9 @@
 import Image from "next/image"
 import { WhatsAppButton } from "@/components/whatsapp-button"
-import { getAboutImages } from "@/lib/sanity/queries"
+import { getAboutImages } from "@/lib/db/queries"
 import { urlFor } from "@/lib/sanity/client"
-import { 
-  MapPin, Phone, Mail, Clock, 
+import {
+  MapPin, Phone, Mail, Clock,
   Users, Award, Heart, Sparkles,
   Building, TrendingUp, Handshake
 } from "lucide-react"
@@ -37,7 +37,7 @@ const milestones = [
   {
     year: "Hoy",
     title: "Líderes del Sector",
-    description: "Más de 500 clientes confían en nosotros para sus necesidades de limpieza profesional.",
+    description: "Más de dos décadas brindando soluciones de limpieza profesional.",
     icon: Handshake,
   },
 ]
@@ -63,10 +63,10 @@ const values = [
 
 // Contact info
 const contactInfo = [
-  { icon: MapPin, title: "Ubicación", content: "Libertad 1556, Buenos Aires" },
-  { icon: Phone, title: "Teléfono", content: "+54 9 11 1234-5678" },
-  { icon: Mail, title: "Email", content: "info@adnlimpieza.com" },
-  { icon: Clock, title: "Horario", content: "Lun - Vie: 9:00 - 18:00" },
+  { icon: MapPin, title: "Ubicación", content: "Libertad 1556, X2400 San Francisco, Córdoba" },
+  { icon: Phone, title: "Teléfono", content: "+54 9 3564 21-1526" },
+  { icon: Mail, title: "Email", content: "limpiezaadn@gmail.com" },
+  { icon: Clock, title: "Horario", content: "Lun - Jue: 8:00 – 12:00 y 15:30 – 20:00, Vie: 8:00 – 12:00 y 16:00 – 20:00, Sáb: 8:30 – 12:30" },
 ]
 
 export default async function SobreNosotrosPage() {
@@ -75,30 +75,30 @@ export default async function SobreNosotrosPage() {
   // Convertir imágenes de Sanity
   const images =
     aboutImages.length > 0
-      ? aboutImages.map((img) => ({
-          src: urlFor(img.image).width(800).height(600).url(),
-          alt: img.title || "Nuestro negocio",
-        }))
+      ? aboutImages.map((img: any) => ({
+        src: urlFor(img.image).width(800).height(600).url(),
+        alt: img.title || "Nuestro negocio",
+      }))
       : [
-          { src: "/placeholder.svg?key=team1", alt: "Nuestro equipo" },
-          { src: "/placeholder.svg?key=store1", alt: "Nuestras instalaciones" },
-          { src: "/placeholder.svg?key=products1", alt: "Nuestros productos" },
-        ]
+        { src: "/placeholder.svg?key=team1", alt: "Nuestro equipo" },
+        { src: "/placeholder.svg?key=store1", alt: "Nuestras instalaciones" },
+        { src: "/placeholder.svg?key=products1", alt: "Nuestros productos" },
+      ]
 
   return (
     <div className="min-h-screen pt-20">
-      
+
       {/* =========================================================================
           HERO SECTION
           ========================================================================= */}
       <section className="section-padding relative overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent/80" />
-        
+
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
-        
+
         <div className="container mx-auto px-4 lg:px-8 text-center relative z-10">
           <div className="max-w-3xl mx-auto animate-fade-up">
             <div className="inline-flex items-center gap-4 mb-6">
@@ -106,12 +106,12 @@ export default async function SobreNosotrosPage() {
               <span className="label-text text-white/80">Nuestra historia</span>
               <div className="w-12 h-px bg-white/30" />
             </div>
-            
+
             <h1 className="display-xl text-primary-foreground mb-6 text-balance">
               Sobre Nosotros
             </h1>
             <p className="body-lg text-primary-foreground/90 text-pretty">
-              Más de 15 años brindando soluciones de limpieza profesional 
+              Más de 20 años brindando soluciones de limpieza profesional
               para hogares y negocios en toda Argentina.
             </p>
           </div>
@@ -125,7 +125,7 @@ export default async function SobreNosotrosPage() {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              
+
               {/* Text content */}
               <div className="animate-fade-up">
                 <span className="badge-primary mb-6">Nuestra Historia</span>
@@ -134,22 +134,22 @@ export default async function SobreNosotrosPage() {
                 </h2>
                 <div className="space-y-4 body-md text-muted-foreground">
                   <p className="text-pretty">
-                    Comenzamos como un pequeño emprendimiento familiar con una misión clara: 
-                    ofrecer productos de limpieza de la más alta calidad que realmente 
+                    Comenzamos como un pequeño emprendimiento familiar con una misión clara:
+                    ofrecer productos de limpieza de la más alta calidad que realmente
                     cumplan sus promesas.
                   </p>
                   <p className="text-pretty">
-                    Durante más de 15 años, hemos construido relaciones sólidas con 
-                    nuestros clientes basadas en la confianza, la calidad y el servicio 
+                    Durante más de 20 años, hemos construido relaciones sólidas con
+                    nuestros clientes basadas en la confianza, la calidad y el servicio
                     excepcional.
                   </p>
                   <p className="text-pretty">
-                    Nuestra pasión por la limpieza y el orden nos impulsa a buscar 
+                    Nuestra pasión por la limpieza y el orden nos impulsa a buscar
                     constantemente las mejores soluciones del mercado.
                   </p>
                 </div>
               </div>
-              
+
               {/* Image */}
               {images[0] && (
                 <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
@@ -163,7 +163,7 @@ export default async function SobreNosotrosPage() {
                   </div>
                 </div>
               )}
-              
+
             </div>
           </div>
         </div>
@@ -175,24 +175,24 @@ export default async function SobreNosotrosPage() {
       <section className="section-padding bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-3xl mx-auto">
-            
+
             {/* Section header */}
             <div className="text-center mb-16 animate-fade-up">
               <span className="badge-primary mb-6">Nuestra Trayectoria</span>
-              <h2 className="display-lg">+15 años de crecimiento</h2>
+              <h2 className="display-lg">+20 años de crecimiento</h2>
             </div>
-            
+
             {/* Timeline */}
             <div className="relative">
               {/* Vertical line */}
               <div className="absolute left-6 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-0.5 bg-border" />
-              
+
               {milestones.map((milestone, index) => {
                 const Icon = milestone.icon
                 const isEven = index % 2 === 0
-                
+
                 return (
-                  <div 
+                  <div
                     key={milestone.year}
                     className={cn(
                       "relative flex gap-6 md:gap-12 pb-12 last:pb-0",
@@ -215,19 +215,19 @@ export default async function SobreNosotrosPage() {
                         <p className="body-sm text-muted-foreground">{milestone.description}</p>
                       </div>
                     </div>
-                    
+
                     {/* Center dot */}
                     <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 rounded-full bg-background border-2 border-primary flex items-center justify-center shadow-soft z-10">
                       <Icon className="w-5 h-5 text-primary" />
                     </div>
-                    
+
                     {/* Spacer for the other side on desktop */}
                     <div className="hidden md:block flex-1" />
                   </div>
                 )
               })}
             </div>
-            
+
           </div>
         </div>
       </section>
@@ -237,7 +237,7 @@ export default async function SobreNosotrosPage() {
           ========================================================================= */}
       <section className="section-padding">
         <div className="container mx-auto px-4 lg:px-8">
-          
+
           {/* Section header */}
           <div className="text-center mb-16 animate-fade-up">
             <div className="inline-flex items-center gap-4 mb-6">
@@ -247,7 +247,7 @@ export default async function SobreNosotrosPage() {
             </div>
             <h2 className="display-lg">Nuestros Valores</h2>
           </div>
-          
+
           {/* Values grid */}
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto stagger-children">
             {values.map((value) => {
@@ -283,15 +283,15 @@ export default async function SobreNosotrosPage() {
       {images.length > 1 && (
         <section className="section-padding bg-muted/30">
           <div className="container mx-auto px-4 lg:px-8">
-            
+
             <div className="text-center mb-12 animate-fade-up">
               <h2 className="display-lg">Nuestras Instalaciones</h2>
             </div>
-            
+
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
               {images.map((image, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft group"
                 >
                   <Image
@@ -314,12 +314,12 @@ export default async function SobreNosotrosPage() {
       <section className="section-padding">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            
+
             <div className="text-center mb-12 animate-fade-up">
               <span className="badge-primary mb-6">Contáctanos</span>
               <h2 className="display-lg">Información de Contacto</h2>
             </div>
-            
+
             {/* Contact cards grid */}
             <div className="grid sm:grid-cols-2 gap-4 mb-8 stagger-children">
               {contactInfo.map((info) => {
@@ -345,14 +345,14 @@ export default async function SobreNosotrosPage() {
                 )
               })}
             </div>
-            
+
             {/* CTA */}
             <div className="text-center animate-fade-up">
               <p className="body-md text-muted-foreground mb-6">
                 ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
               </p>
-              <WhatsAppButton 
-                size="lg" 
+              <WhatsAppButton
+                size="lg"
                 className="shadow-soft hover:shadow-glow transition-all duration-300"
               >
                 Contactar por WhatsApp
@@ -363,7 +363,7 @@ export default async function SobreNosotrosPage() {
             <div className="mt-12 animate-fade-up" style={{ animationDelay: "200ms" }}>
               <div className="relative rounded-3xl overflow-hidden shadow-soft-xl border border-border/50 aspect-[16/9] md:aspect-[21/9]">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13636.568114227092!2d-62.083!3d-31.433!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95cb33a208f0a6d5%3A0xc6c42971a8f94d3!2sLibertad+1556%2C+X2400+San+Francisco%2C+C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -374,11 +374,11 @@ export default async function SobreNosotrosPage() {
                 />
               </div>
             </div>
-            
+
           </div>
         </div>
       </section>
-      
+
     </div>
   )
 }

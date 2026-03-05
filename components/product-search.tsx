@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, X, Loader2, Check, ChevronsUpDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -34,16 +34,30 @@ export function ProductSearch({ categories }: ProductSearchProps) {
   const [category, setCategory] = useState(searchParams.get("category") || "all")
   const [open, setOpen] = useState(false)
 
-  const handleSearch = () => {
+  // Función de búsqueda sincronizada con la URL
+  const handleSearch = (searchTerm = search, catId = category) => {
     startTransition(() => {
       const params = new URLSearchParams()
-      if (search) params.set("search", search)
-      if (category !== "all") params.set("category", category)
+      if (searchTerm) params.set("search", searchTerm)
+      if (catId !== "all") params.set("category", catId)
 
       const queryString = params.toString()
-      router.push(`/productos${queryString ? `?${queryString}` : ""}`)
+      router.push(`/productos${queryString ? `?${queryString}` : ""}`, { scroll: false })
     })
   }
+
+  // Debounced search for name input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Only trigger if the search actually changed from the URL param
+      const currentSearch = searchParams.get("search") || ""
+      if (search !== currentSearch) {
+        handleSearch(search, category)
+      }
+    }, 400) // 400ms delay
+
+    return () => clearTimeout(timer)
+  }, [search])
 
   const handleCategoryChange = (currentValue: string) => {
     // If clicking the already selected category, don't toggle it off, just keep it.
@@ -52,7 +66,7 @@ export function ProductSearch({ categories }: ProductSearchProps) {
     const newCategory = currentValue
     setCategory(newCategory)
     setOpen(false)
-    
+
     startTransition(() => {
       const params = new URLSearchParams()
       if (search) params.set("search", search)
@@ -77,10 +91,10 @@ export function ProductSearch({ categories }: ProductSearchProps) {
   return (
     <div className="-mx-4 px-4 py-8 mb-4 mt-4">
       <div className="container-wide">
-        
+
         {/* Unified Search Bar */}
         <div className="flex flex-col md:flex-row gap-3 justify-center items-center w-full max-w-4xl mx-auto">
-          
+
           {/* Search Input */}
           <div className="relative flex-1 w-full md:w-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -112,7 +126,7 @@ export function ProductSearch({ categories }: ProductSearchProps) {
                 )}
               >
                 <span className="truncate text-sm font-normal">
-                   {category === "all" ? "Todas las categorías" : selectedCategoryName}
+                  {category === "all" ? "Todas las categorías" : selectedCategoryName}
                 </span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -159,11 +173,11 @@ export function ProductSearch({ categories }: ProductSearchProps) {
               </Command>
             </PopoverContent>
           </Popover>
-          
+
           {/* Actions */}
           <div className="flex gap-2 w-full md:w-auto">
-            <Button 
-              onClick={handleSearch} 
+            <Button
+              onClick={() => handleSearch()}
               disabled={isPending}
               className="h-11 px-6 rounded-full shadow-soft hover:shadow-glow transition-all duration-300 w-full md:w-auto"
             >
@@ -176,12 +190,12 @@ export function ProductSearch({ categories }: ProductSearchProps) {
                 "Buscar"
               )}
             </Button>
-            
+
             {hasFilters && (
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={handleClearFilters} 
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleClearFilters}
                 disabled={isPending}
                 className="h-11 w-11 rounded-full shrink-0 border-border/50"
               >

@@ -3,50 +3,65 @@ import type { Product, Category, CarouselImage } from "./types";
 
 // Obtener todos los productos
 export async function getAllProducts(): Promise<Product[]> {
-  const query = `*[_type == "product"] | order(_createdAt desc) {
-    _id,
-    _type,
-    name,
-    shortDescription,
-    longDescription,
-    image,
-    category
-  }`;
-  return await sanityClient.fetch(query);
+  try {
+    const query = `*[_type == "product"] | order(_createdAt desc) {
+      _id,
+      _type,
+      name,
+      shortDescription,
+      longDescription,
+      image,
+      category
+    }`;
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Error fetching all products:", error);
+    return [];
+  }
 }
 
 // Obtener productos con información de categoría expandida
 export async function getProductsWithCategories(): Promise<Product[]> {
-  const query = `*[_type == "product"] | order(_createdAt desc) {
-    _id,
-    _type,
-    name,
-    shortDescription,
-    longDescription,
-    image,
-    "category": category->{
+  try {
+    const query = `*[_type == "product"] | order(_createdAt desc) {
       _id,
-      "name": title
-    }
-  }`;
-  return await sanityClient.fetch(query);
+      _type,
+      name,
+      shortDescription,
+      longDescription,
+      image,
+      "category": category->{
+        _id,
+        "name": title
+      }
+    }`;
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Error fetching products with categories:", error);
+    return [];
+  }
 }
 
 // Obtener un producto por ID
 export async function getProductById(id: string): Promise<Product | null> {
-  const query = `*[_type == "product" && _id == $id][0] {
-    _id,
-    _type,
-    name,
-    shortDescription,
-    longDescription,
-    image,
-    "category": category->{
+  try {
+    const query = `*[_type == "product" && _id == $id][0] {
       _id,
-      "name": title
-    }
-  }`;
-  return await sanityClient.fetch(query, { id });
+      _type,
+      name,
+      shortDescription,
+      longDescription,
+      image,
+      "category": category->{
+        _id,
+        "name": title
+      }
+    }`;
+    return await sanityClient.fetch(query, { id });
+  } catch (error) {
+    console.error(`Error fetching product with ID ${id}:`, error);
+    return null;
+  }
 }
 
 // Buscar productos por nombre
@@ -87,32 +102,47 @@ export async function getProductsByCategory(
 
 // Obtener todas las categorías
 export async function getAllCategories(): Promise<Category[]> {
-  const query = `*[_type == "category"] | order(title asc) {
-    _id,
-    _type,
-    "name": title
-  }`;
-  return await sanityClient.fetch(query);
+  try {
+    const query = `*[_type == "category"] | order(title asc) {
+      _id,
+      _type,
+      "name": title
+    }`;
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Error fetching all categories:", error);
+    return [];
+  }
 }
 
 // Obtener imágenes del carrusel para la página de inicio
 export async function getHomeCarouselImages(): Promise<CarouselImage[]> {
-  const query = `*[_type == "carouselImage" && showInHome == true] | order(_createdAt desc) {
-    _id,
-    _type,
-    title,
-    image
-  }`;
-  return await sanityClient.fetch(query);
+  try {
+    const query = `*[_type == "carouselImage" && showInHome == true] | order(_createdAt desc) {
+      _id,
+      _type,
+      title,
+      image
+    }`;
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Error fetching home carousel images:", error);
+    return [];
+  }
 }
 
 // Obtener imágenes para la página "Sobre Nosotros"
 export async function getAboutImages(): Promise<CarouselImage[]> {
-  const query = `*[_type == "carouselImage" && showInAbout == true] | order(_createdAt desc) {
-    _id,
-    _type,
-    title,
-    image
-  }`;
-  return await sanityClient.fetch(query);
+  try {
+    const query = `*[_type == "carouselImage" && showInAbout == true] | order(_createdAt desc) {
+      _id,
+      _type,
+      title,
+      image
+    }`;
+    return await sanityClient.fetch(query);
+  } catch (error) {
+    console.error("Error fetching about images:", error);
+    return [];
+  }
 }

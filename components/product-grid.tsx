@@ -20,8 +20,8 @@ export function ProductGrid({ products }: ProductGridProps) {
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
       {products.map((product, index) => {
         const category = product.category as any
-        const imageUrl = product.image 
-          ? urlFor(product.image).width(400).height(400).url() 
+        const imageUrl = product.image
+          ? urlFor(product.image).width(400).height(400).url()
           : null
 
         return (
@@ -55,11 +55,11 @@ export function ProductGrid({ products }: ProductGridProps) {
                   <Package className="h-10 w-10 text-muted-foreground/30" />
                 </div>
               )}
-              
+
               {/* Category Badge - Minimalist */}
               {category && (
                 <div className="absolute top-2 left-2 z-10">
-                   <Badge 
+                  <Badge
                     variant="secondary"
                     className="bg-background/90 backdrop-blur text-xs font-normal px-2 py-0.5 shadow-sm border-0"
                   >
@@ -76,11 +76,11 @@ export function ProductGrid({ products }: ProductGridProps) {
                   {product.name}
                 </h3>
               </Link>
-              
+
               <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                {product.shortDescription || product.description}
+                {product.shortDescription || product.longDescription}
               </p>
-              
+
               {/* Optional: Add price or CTA here if needed specifically, otherwise keep clean */}
             </div>
           </article>

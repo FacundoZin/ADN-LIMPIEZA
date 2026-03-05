@@ -28,3 +28,5 @@ build/
 # Archivos generados por Next.js
 # (Aunque .next/ ya está cubierto, puede haber otros)
 next.config.js.timestamp
+
+/generated/prisma

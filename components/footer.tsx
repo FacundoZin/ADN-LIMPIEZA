@@ -20,9 +20,9 @@ const navigation = [
 ]
 
 const contactInfo = [
-  { icon: Phone, label: "Teléfono", value: "+54 9 11 1234-5678" },
-  { icon: Mail, label: "Email", value: "info@adnlimpieza.com" },
-  { icon: MapPin, label: "Ubicación", value: "Libertad 1556, Buenos Aires" },
+  { icon: Phone, label: "Teléfono", value: "+54 9 3564 21-1526" },
+  { icon: Mail, label: "Email", value: "limpiezaadn@gmail.com" },
+  { icon: MapPin, label: "Ubicación", value: "Libertad 1556, X2400 San Francisco, Córdoba" },
 ]
 
 const socialLinks = [
@@ -40,7 +40,7 @@ export function Footer() {
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
-          
+
           {/* Brand Column */}
           <div className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center gap-3 group mb-6">
@@ -62,13 +62,13 @@ export function Footer() {
                 ADN Limpieza
               </span>
             </Link>
-            
+
             <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
-              Más de 15 años brindando soluciones de limpieza profesional. 
+              Más de 20 años brindando soluciones de limpieza profesional.
               Productos de calidad que realmente cumplen sus promesas.
             </p>
-            
-            <WhatsAppButton 
+
+            <WhatsAppButton
               size="lg"
               className="shadow-soft hover:shadow-glow transition-all duration-300 mb-8"
             >
@@ -117,7 +117,7 @@ export function Footer() {
                   </li>
                 )
               })}
-              
+
               {/* Hours */}
               <li className="flex items-start gap-3 group">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors duration-300">
@@ -125,8 +125,10 @@ export function Footer() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Horario</p>
-                  <p className="font-medium">Lun - Vie: 9:00 - 18:00</p>
-                  <p className="text-sm text-muted-foreground">Sáb: 9:00 - 13:00</p>
+                  <p className="font-medium">Lun - Jue: 8:00 – 12:00 y 15:30 – 20:00</p>
+                  <p className="font-medium">Vie: 8:00 – 12:00 y 16:00 – 20:00</p>
+                  <p className="font-medium">Sáb: 8:30 – 12:30</p>
+                  <p className="text-sm text-muted-foreground">Dom: Cerrado</p>
                 </div>
               </li>
             </ul>
@@ -151,7 +153,7 @@ export function Footer() {
               ))}
             </ul>
           </div>
-          
+
         </div>
 
         {/* Map Embed - Centered Section */}
@@ -159,7 +161,7 @@ export function Footer() {
           <div className="mt-12 max-w-4xl mx-auto">
             <div className="relative rounded-2xl overflow-hidden shadow-soft border border-border/50 h-48 lg:h-64 group">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.144453306899!2d-58.39121!3d-34.59123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccab99a0ed30b%3A0xc3f835f8d689b275!2sLibertad%201556%2C%20C1016ABB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires%2C%20Argentina!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13636.568114227092!2d-62.083!3d-31.433!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95cb33a208f0a6d5%3A0xc6c42971a8f94d3!2sLibertad+1556%2C+X2400+San+Francisco%2C+C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1718654321234!5m2!1ses-419!2sar"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -203,8 +205,8 @@ export function Footer() {
                       </div>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent 
-                    side="top" 
+                  <TooltipContent
+                    side="top"
                     className="bg-card/95 backdrop-blur-xl border border-border/50 p-4 rounded-2xl shadow-soft-xl animate-in fade-in zoom-in duration-200"
                   >
                     <div className="flex flex-col gap-4 min-w-[200px]">
@@ -214,9 +216,9 @@ export function Footer() {
                         </div>
                         <div>
                           <p className="font-bold text-foreground">Syntrax Software</p>
-                          <a 
-                            href="https://www.instagram.com/syntrax.software/" 
-                            target="_blank" 
+                          <a
+                            href="https://www.instagram.com/syntrax.software/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs text-primary hover:underline"
                           >
@@ -224,16 +226,16 @@ export function Footer() {
                           </a>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                           <Globe className="w-6 h-6 text-primary" />
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nuestra Web</p>
-                          <a 
-                            href="https://syntrax-web.vercel.app/" 
-                            target="_blank" 
+                          <a
+                            href="https://syntrax-web.vercel.app/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                           >
@@ -248,14 +250,14 @@ export function Footer() {
             </div>
 
             <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="hover:text-foreground transition-colors duration-300"
               >
                 Términos
               </Link>
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="hover:text-foreground transition-colors duration-300"
               >
                 Privacidad

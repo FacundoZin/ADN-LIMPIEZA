@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { ProductSearch } from "@/components/product-search"
 import { ProductGrid } from "@/components/product-grid"
-import { getProductsWithCategories, getAllCategories } from "@/lib/sanity/queries"
+import { getProductsWithCategories, getAllCategories } from "@/lib/db/queries"
 import { Loader2, Package } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -16,7 +16,7 @@ export default async function ProductosPage({
   searchParams: Promise<{ search?: string; category?: string }>
 }) {
   const [products, categories] = await Promise.all([
-    getProductsWithCategories(), 
+    getProductsWithCategories(),
     getAllCategories()
   ])
   const { search, category } = await searchParams
@@ -25,11 +25,11 @@ export default async function ProductosPage({
   const filteredProducts = products.filter((product) => {
     const matchesSearch = search
       ? product.name.toLowerCase().includes(search.toLowerCase()) ||
-        (product.shortDescription ?? "").toLowerCase().includes(search.toLowerCase())
+      (product.shortDescription ?? "").toLowerCase().includes(search.toLowerCase())
       : true
 
-    const matchesCategory = category && category !== "all" 
-      ? (product.category as any)?._id === category 
+    const matchesCategory = category && category !== "all"
+      ? (product.category as any)?._ref === category
       : true
 
     return matchesSearch && matchesCategory
@@ -37,7 +37,7 @@ export default async function ProductosPage({
 
   return (
     <div className="min-h-screen pt-20">
-      
+
       {/* Page Header */}
       <section className="section-padding pb-0 bg-gradient-to-b from-muted/50 to-background">
         <div className="container mx-auto px-4 lg:px-8">
@@ -48,12 +48,12 @@ export default async function ProductosPage({
               <span className="label-text text-muted-foreground">Catálogo</span>
               <div className="w-12 h-px bg-border" />
             </div>
-            
+
             <h1 className="display-xl mb-4 text-balance">
               Nuestros Productos
             </h1>
             <p className="body-lg text-muted-foreground text-pretty">
-              Encuentra los mejores productos de limpieza para tu hogar o negocio. 
+              Encuentra los mejores productos de limpieza para tu hogar o negocio.
               Calidad profesional para resultados excepcionales.
             </p>
           </div>
@@ -92,7 +92,7 @@ export default async function ProductosPage({
               </p>
             </div>
           )}
-          
+
           {/* Results count */}
           {filteredProducts.length > 0 && (
             <div className="mt-12 pt-8 border-t border-border/50 text-center">
@@ -106,7 +106,7 @@ export default async function ProductosPage({
           )}
         </div>
       </section>
-      
+
     </div>
   )
 }
