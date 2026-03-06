@@ -9,7 +9,6 @@ import {
   getProductById,
   getProductsWithCategories,
 } from "@/lib/db/queries";
-import { urlFor } from "@/lib/sanity/client";
 import { WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 
 export async function generateMetadata({
@@ -44,16 +43,14 @@ export default async function ProductoPage({
     notFound();
   }
 
-  const category = product.category as any;
-  const imageUrl = product.image
-    ? urlFor(product.image).width(800).height(800).url()
-    : null;
+  const category = product.category;
+  const imageUrl = product.imageUrl;
 
   // Obtener productos relacionados de la misma categoría
   const allProducts = await getProductsWithCategories();
   const relatedProducts = allProducts
     .filter(
-      (p) => p._id !== product._id && (p.category as any)?._id === category?._id
+      (p) => p.id !== product.id && p.category?.id === category?.id
     )
     .slice(0, 4);
 
@@ -163,14 +160,12 @@ export default async function ProductoPage({
             <h2 className="text-3xl font-bold mb-8">Productos Relacionados</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => {
-                const relatedImageUrl = relatedProduct.image
-                  ? urlFor(relatedProduct.image).width(400).height(400).url()
-                  : null;
+                const relatedImageUrl = relatedProduct.imageUrl;
 
                 return (
                   <Link
-                    key={relatedProduct._id}
-                    href={`/productos/${relatedProduct._id}`}
+                    key={relatedProduct.id}
+                    href={`/productos/${relatedProduct.id}`}
                     className="group"
                   >
                     <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full">
@@ -203,3 +198,4 @@ export default async function ProductoPage({
     </div>
   );
 }
+

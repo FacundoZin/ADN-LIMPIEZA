@@ -1192,3 +1192,86 @@
   background-color: var(--admin-border);
   border-radius: 4px;
 }
+
+/* =============================================================================
+   WIDGET FIXES — External integrations
+   ============================================================================= */
+
+/* Elfsight Reviews — Dark Mode Fixes */
+.dark .es-review-container,
+.dark [class*="eapps-google-reviews-item-inner"] {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-soft-lg) !important;
+  border-radius: 1.5rem !important; /* Premium rounded corners constant across themes */
+  overflow: hidden !important;
+}
+
+/* Fix for square corners specifically mentioned by user */
+.dark [class*="eapps-google-reviews-item-component"] {
+  border-radius: 1.5rem !important;
+}
+
+.dark .es-review-container div,
+.dark .es-review-container span,
+.dark .es-review-container p,
+.dark [class*="eapps-google-reviews-item"] * {
+  color: var(--foreground) !important;
+}
+
+/* Ensure metadata remains visible */
+.dark .es-review-author-name,
+.dark .es-review-info-date,
+.dark .es-review-info-source-link,
+.dark [class*="eapps-google-reviews-item-author-name"],
+.dark [class*="eapps-google-reviews-item-date"] {
+  color: var(--foreground) !important;
+  opacity: 0.9;
+}
+
+/* Ensure the star rating icons remain visible and original (gold) */
+.dark .es-review-star-rating-container svg,
+.dark .es-review-star-rating-container path,
+.dark [class*="eapps-google-reviews-stars"] svg {
+  fill: #ffb400 !important;
+  color: #ffb400 !important;
+}
+
+/* Read more link visibility */
+.dark .es-review-container .es-review-content-text-read-more,
+.dark .es-review-container [class*="read-more"] {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Modal fix for broken appearance in dark mode */
+.dark [class*="eapps-google-reviews-modal-container"] {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.dark [class*="eapps-google-reviews-modal-content"],
+.dark [class*="eapps-google-reviews-modal-info-component"] {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: var(--shadow-soft-xl) !important;
+}
+
+.dark [class*="eapps-google-reviews-modal"] * {
+  color: var(--foreground) !important;
+}
+
+/* Fix close button and other modal UI elements */
+.dark [class*="eapps-google-reviews-modal-close"] svg {
+    fill: var(--foreground) !important;
+    opacity: 0.7;
+}
+
+.dark [class*="eapps-google-reviews-modal-close"]:hover svg {
+    opacity: 1;
+}
+
+
+

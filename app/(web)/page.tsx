@@ -48,7 +48,7 @@ export default function HomePage() {
       {/* =========================================================================
           HERO SECTION - Split Layout Premium
           ========================================================================= */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
+      <section className="relative min-h-screen flex items-center pt-20 pb-12 lg:pb-20 overflow-hidden">
         {/* Background with subtle gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/30" />
 
@@ -63,12 +63,12 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3" aria-hidden="true" />
 
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-center justify-center">
 
             {/* Left Column - Content */}
             <div className="max-w-xl animate-fade-up">
               {/* Trust Badge */}
-              <div className="badge-success mb-8">
+              <div className="badge-success mb-6 lg:mb-8">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-success" />
@@ -77,20 +77,18 @@ export default function HomePage() {
               </div>
 
               {/* Main Headline */}
-              <h1 className="display-2xl mb-6 text-balance">
+              <h1 className="display-2xl mb-4 lg:mb-6 text-balance">
                 Limpieza que{" "}
                 <span className="text-primary">inspira confianza</span>
               </h1>
 
               {/* Subheadline */}
-              <p className="body-lg text-muted-foreground mb-10 text-pretty">
-                En ADN LIMPIEZA brindamos el asesoramiento necesario para que puedas elegirla mejor combinación de productos y técnicas de limpieza.
-
-
+              <p className="body-lg text-muted-foreground mb-8 lg:mb-10 text-pretty">
+                En ADN LIMPIEZA brindamos el asesoramiento necesario para que puedas elegir la mejor combinación de productos y técnicas de limpieza.
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 mb-12">
+              <div className="flex flex-wrap gap-4 mb-8 lg:mb-12">
                 <Button
                   size="lg"
                   asChild
@@ -104,7 +102,13 @@ export default function HomePage() {
                 <WhatsAppButton
                   size="lg"
                   variant="outline"
-                  className="h-14 px-8 text-base rounded-xl border-2 hover:border-primary hover:text-primary transition-all duration-300"
+                  className={cn(
+                    "h-14 px-8 text-base rounded-xl border-2 transition-all duration-500",
+                    "bg-transparent border-border hover:border-primary hover:text-primary hover:bg-primary/5",
+                    "dark:border-white/10 dark:hover:border-primary dark:hover:text-primary dark:hover:bg-primary/10",
+                    "hover:-translate-y-1 hover:shadow-soft-lg active:scale-95",
+                    "shine overflow-hidden"
+                  )}
                 />
               </div>
 
@@ -128,14 +132,19 @@ export default function HomePage() {
               {/* Background glow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-full blur-3xl" aria-hidden="true" />
 
-              {/* Hero Image / Slider */}
-              <div className="relative shadow-soft-xl border-2 border-white/20 dark:border-white/10 rounded-2xl overflow-hidden">
+              {/* Hero Image / Slider with Aesthetic Border */}
+              <div className={cn(
+                "relative group/hero shadow-soft-xl rounded-3xl overflow-hidden",
+                "border-4 border-white dark:border-white/5",
+                "ring-1 ring-black/5 dark:ring-white/10",
+                "transition-all duration-500 hover:shadow-glow/20"
+              )}>
                 <HeroImage />
               </div>
 
-              {/* Floating Card - Satisfaction */}
+              {/* Floating Card - Premium Quality */}
               <div className={cn(
-                "absolute -bottom-4 -left-4 p-4",
+                "absolute -bottom-4 -left-4 p-4 z-40",
                 "bg-card/95 backdrop-blur-xl rounded-2xl",
                 "border border-border/50 shadow-soft-lg",
                 "animate-float"
@@ -145,16 +154,37 @@ export default function HomePage() {
                     <CheckCircle2 className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-sm">Satisfacción</div>
-                    <div className="text-xs text-muted-foreground">Garantizada</div>
+                    <div className="font-semibold text-sm text-foreground">Calidad Premium</div>
+                    <div className="text-xs text-muted-foreground">Productos de primera</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Mobile Image */}
-            <div className="lg:hidden">
+            {/* Mobile Image with Aesthetic Border */}
+            <div className={cn(
+              "lg:hidden relative rounded-3xl overflow-hidden",
+              "border-4 border-white dark:border-white/5",
+              "ring-1 ring-black/5 dark:ring-white/10 shadow-soft-xl"
+            )}>
               <HeroImage />
+              {/* Floating Card - Mobile */}
+              <div className={cn(
+                "absolute -bottom-2 -left-2 p-3 z-40 scale-75 origin-bottom-left",
+                "bg-card/95 backdrop-blur-xl rounded-2xl",
+                "border border-border/50 shadow-soft-lg",
+                "animate-float"
+              )}>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-xs text-foreground">Calidad Premium</div>
+                    <div className="text-[10px] text-muted-foreground whitespace-nowrap">Productos de primera</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -268,9 +298,10 @@ export default function HomePage() {
               className={cn(
                 "h-14 px-8 text-base rounded-xl",
                 "bg-white text-primary border-0",
-                "hover:bg-white/90",
+                "hover:bg-white hover:text-primary", 
                 "shadow-soft-xl hover:shadow-glow-lg",
-                "transition-all duration-300 hover:scale-105"
+                "transition-all duration-300 hover:scale-105 active:scale-95",
+                "shine overflow-hidden"
               )}
             >
               Consultar Ahora

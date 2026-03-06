@@ -64,8 +64,8 @@ export function HeroImage({
     return (
         <div
             className={cn(
-                "relative w-full h-full min-h-[400px] md:min-h-[500px] lg:min-h-[600px]",
-                "rounded-2xl overflow-hidden",
+                "relative w-full h-full min-h-[400px] md:min-h-[450px] lg:min-h-[550px]",
+                "rounded-3xl overflow-hidden",
                 "group",
                 className
             )}

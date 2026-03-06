@@ -1,10 +1,8 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { urlFor } from "@/lib/sanity/client"
-import type { Product } from "@/lib/sanity/types"
-import { Package, ArrowRight } from "lucide-react"
+import type { Product } from "@/lib/db/queries"
+import { Package } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ProductGridProps {
@@ -19,14 +17,12 @@ export function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
       {products.map((product, index) => {
-        const category = product.category as any
-        const imageUrl = product.image
-          ? urlFor(product.image).width(400).height(400).url()
-          : null
+        const category = product.category
+        const imageUrl = product.imageUrl
 
         return (
           <article
-            key={product._id}
+            key={product.id}
             className={cn(
               "group flex flex-col h-full bg-card rounded-xl overflow-hidden",
               "border border-border/40 hover:border-primary/40",
@@ -37,7 +33,7 @@ export function ProductGrid({ products }: ProductGridProps) {
             style={{ animationDelay: `${index * 50}ms` }}
           >
             {/* Image Container */}
-            <Link href={`/productos/${product._id}`} className="block relative aspect-square overflow-hidden bg-muted/20">
+            <Link href={`/productos/${product.id}`} className="block relative aspect-square overflow-hidden bg-muted/20">
               {imageUrl ? (
                 <>
                   <Image
@@ -71,7 +67,7 @@ export function ProductGrid({ products }: ProductGridProps) {
 
             {/* Content */}
             <div className="flex flex-col flex-1 p-3.5">
-              <Link href={`/productos/${product._id}`} className="block group/title">
+              <Link href={`/productos/${product.id}`} className="block group/title">
                 <h3 className="font-medium text-sm sm:text-base leading-tight mb-1.5 text-foreground group-hover/title:text-primary transition-colors">
                   {product.name}
                 </h3>
@@ -89,3 +85,4 @@ export function ProductGrid({ products }: ProductGridProps) {
     </div>
   )
 }
+

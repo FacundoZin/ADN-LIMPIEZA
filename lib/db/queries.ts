@@ -1,32 +1,47 @@
 import prisma from "../db";
-import type { Product, Category, CarouselImage } from "../sanity/types";
 
-// Mapping from Prisma to Sanity-compatible types
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  shortDescription?: string;
+  longDescription?: string;
+  imageUrl?: string;
+  category?: Category;
+  categoryId: string;
+}
+
+export interface CarouselImage {
+  id: string;
+  url: string;
+  alt?: string;
+}
+
+// Mapping from Prisma to simplified types
 function mapProduct(p: any): Product {
   return {
-    _id: p.id,
-    _type: "product",
+    id: p.id,
     name: p.name,
     shortDescription: p.shortDescription || undefined,
     longDescription: p.longDescription || undefined,
-    // If it's a Sanity ref style, we keep it, otherwise we could store a URL
-    image: p.imageUrl
-      ? { asset: { _ref: p.imageUrl, _type: "reference" } }
-      : undefined,
+    imageUrl: p.imageUrl || undefined,
     category: p.category
-      ? ({
-          _ref: p.categoryId,
-          _type: "reference",
+      ? {
+          id: p.category.id,
           name: p.category.name,
-        } as any)
-      : { _ref: p.categoryId, _type: "reference" },
+        }
+      : undefined,
+    categoryId: p.categoryId,
   };
 }
 
 function mapCategory(c: any): Category {
   return {
-    _id: c.id,
-    _type: "category",
+    id: c.id,
     name: c.name,
   };
 }

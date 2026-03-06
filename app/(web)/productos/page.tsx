@@ -39,29 +39,32 @@ export default async function ProductosPage({
     <div className="min-h-screen pt-20">
 
       {/* Page Header */}
-      <section className="section-padding pb-0 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container mx-auto px-4 lg:px-8">
+      <section className="pt-20 pb-32 bg-gradient-to-b from-muted/50 to-background relative overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-radial-gradient-primary opacity-[0.03] -mr-20 -mt-20 pointer-events-none" />
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center animate-fade-up">
             {/* Section Label */}
             <div className="inline-flex items-center gap-4 mb-6">
-              <div className="w-12 h-px bg-border" />
-              <span className="label-text text-muted-foreground">Catálogo</span>
-              <div className="w-12 h-px bg-border" />
+              <div className="w-12 h-px bg-primary/30" />
+              <span className="label-text text-primary font-bold">Catálogo</span>
+              <div className="w-12 h-px bg-primary/30" />
             </div>
 
-            <h1 className="display-xl mb-4 text-balance">
-              Nuestros Productos
+            <h1 className="display-xl mb-6 text-balance">
+              Soluciones de Limpieza <span className="text-primary italic font-serif">ADN</span>
             </h1>
-            <p className="body-lg text-muted-foreground text-pretty">
-              Encuentra los mejores productos de limpieza para tu hogar o negocio.
-              Calidad profesional para resultados excepcionales.
+            <p className="body-lg text-muted-foreground text-pretty max-w-2xl mx-auto">
+              Explora nuestra selección de productos de alta eficiencia. 
+              Calidad garantizada para cada rincón de tu hogar o negocio.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Search and Filter - Now sticky */}
-      <ProductSearch categories={categories} />
+      {/* Search and Filter - Now integrated with overlap */}
+      <ProductSearch initialCategories={categories} />
 
       {/* Products Grid */}
       <section className="pb-20">

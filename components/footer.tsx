@@ -26,8 +26,18 @@ const contactInfo = [
 ]
 
 const socialLinks = [
-  { name: "Instagram", href: "https://www.instagram.com/adnlimpieza/", icon: Instagram },
-  { name: "Facebook", href: "https://www.facebook.com/adn.limpieza.77/", icon: Facebook },
+  { 
+    name: "Instagram", 
+    href: "https://www.instagram.com/adnlimpieza/", 
+    icon: Instagram,
+    className: "text-[#E4405F] bg-[#E4405F]/10 hover:bg-[#E4405F] hover:text-white"
+  },
+  { 
+    name: "Facebook", 
+    href: "https://www.facebook.com/adn.limpieza.77/", 
+    icon: Facebook,
+    className: "text-[#1877F2] bg-[#1877F2]/10 hover:bg-[#1877F2] hover:text-white"
+  },
 ]
 
 export function Footer() {
@@ -42,7 +52,7 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
 
           {/* Brand Column */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-4">
             <Link href="/" className="inline-flex items-center gap-3 group mb-6">
               <div className={cn(
                 "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500",
@@ -85,8 +95,8 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
-                      "bg-primary/10 text-primary hover:bg-primary hover:text-white shadow-soft"
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-soft",
+                      social.className
                     )}
                     aria-label={social.name}
                   >
@@ -98,7 +108,7 @@ export function Footer() {
           </div>
 
           {/* Contact Column */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-3">
             <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
               Contacto
             </h3>
@@ -112,30 +122,58 @@ export function Footer() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">{info.label}</p>
-                      <p className="font-medium">{info.value}</p>
+                      <p className="text-sm font-medium">{info.value}</p>
                     </div>
                   </li>
                 )
               })}
 
-              {/* Hours */}
-              <li className="flex items-start gap-3 group">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors duration-300">
-                  <Clock className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Horario</p>
-                  <p className="font-medium">Lun - Jue: 8:00 – 12:00 y 15:30 – 20:00</p>
-                  <p className="font-medium">Vie: 8:00 – 12:00 y 16:00 – 20:00</p>
-                  <p className="font-medium">Sáb: 8:30 – 12:30</p>
-                  <p className="text-sm text-muted-foreground">Dom: Cerrado</p>
-                </div>
-              </li>
             </ul>
           </div>
 
-          {/* Links Column */}
+          {/* Hours Column */}
           <div className="lg:col-span-3">
+            <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
+              Horarios
+            </h3>
+            <div className="grid gap-4">
+              <div className="group border-l-2 border-primary/20 pl-4 hover:border-primary transition-colors duration-300">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
+                  Lunes a Jueves
+                </p>
+                <div className="flex flex-col text-sm font-medium text-foreground/90">
+                  <span>8:00 – 12:00</span>
+                  <span>15:30 – 20:00</span>
+                </div>
+              </div>
+              
+              <div className="group border-l-2 border-primary/20 pl-4 hover:border-primary transition-colors duration-300">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
+                  Viernes
+                </p>
+                <div className="flex flex-col text-sm font-medium text-foreground/90">
+                  <span>8:00 – 12:00</span>
+                  <span>16:00 – 20:00</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="group border-l-2 border-primary/20 pl-4 hover:border-primary transition-colors duration-300">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
+                    Sábado
+                  </p>
+                  <p className="text-sm font-medium text-foreground/90 tabular-nums">
+                    8:30 – 12:30
+                  </p>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+
+          {/* Links Column */}
+          <div className="lg:col-span-2">
             <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-6">
               Navegación
             </h3>

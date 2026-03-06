@@ -1,7 +1,6 @@
 import Image from "next/image"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getAboutImages } from "@/lib/db/queries"
-import { urlFor } from "@/lib/sanity/client"
 import {
   MapPin, Phone, Mail, Clock,
   Users, Award, Heart, Sparkles,
@@ -72,18 +71,19 @@ const contactInfo = [
 export default async function SobreNosotrosPage() {
   const aboutImages = await getAboutImages()
 
-  // Convertir imágenes de Sanity
+  // Mapear imágenes locales
   const images =
     aboutImages.length > 0
-      ? aboutImages.map((img: any) => ({
-        src: urlFor(img.image).width(800).height(600).url(),
-        alt: img.title || "Nuestro negocio",
+      ? aboutImages.map((img) => ({
+        src: img.url,
+        alt: img.alt || "Nuestro negocio",
       }))
       : [
         { src: "/placeholder.svg?key=team1", alt: "Nuestro equipo" },
         { src: "/placeholder.svg?key=store1", alt: "Nuestras instalaciones" },
         { src: "/placeholder.svg?key=products1", alt: "Nuestros productos" },
       ]
+
 
   return (
     <div className="min-h-screen pt-20">
