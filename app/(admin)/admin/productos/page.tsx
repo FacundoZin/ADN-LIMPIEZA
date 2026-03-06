@@ -238,7 +238,8 @@ export default function ProductosAdminPage() {
     } as const
 
     return (
-        <div className="space-y-6 animate-fade-up" style={S.page}>
+        <>
+            <div className="space-y-6 animate-fade-up" style={S.page}>
 
             {/* Header */}
             <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -437,139 +438,161 @@ export default function ProductosAdminPage() {
                 )}
             </div>
 
+            </div>
+
             {/* MODAL FORM */}
             {isModalOpen && (
                 <div style={{
-                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
-                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100,
-                    padding: 20
-                }}>
+                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
+                    padding: "20px", backdropFilter: "blur(4px)"
+                }} className="animate-fade-in text-white">
                     <div style={{
-                        ...S.surface, width: "100%", maxWidth: 500, padding: 24,
-                        position: "relative", maxHeight: "90vh", overflowY: "auto"
-                    }}>
-                        <button
-                            onClick={closeModal}
-                            style={{ position: "absolute", top: 16, right: 16, color: "white", padding: 4 }}
-                        >
-                            <X style={{ width: 20, height: 20 }} />
-                        </button>
+                        ...S.surface, width: "100%", maxWidth: 550,
+                        position: "relative", maxHeight: "90vh", display: "flex", flexDirection: "column",
+                        overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
+                    }} className="animate-scale-in">
+                        
+                        {/* Header */}
+                        <div style={{ padding: "20px 24px", borderBottom: "1px solid oklch(0.26 0.012 255)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <h2 className="text-xl font-bold">
+                                {editingProduct ? "Editar Producto" : "Nuevo Producto"}
+                            </h2>
+                            <button
+                                onClick={closeModal}
+                                style={{ color: "white", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+                                className="hover:bg-white/10 hover:scale-110 active:scale-95"
+                                title="Cerrar"
+                            >
+                                <X style={{ width: 20, height: 20 }} />
+                            </button>
+                        </div>
 
-                        <h2 className="text-xl font-bold mb-6">
-                            {editingProduct ? "Editar Producto" : "Nuevo Producto"}
-                        </h2>
-
-                        <form onSubmit={handleSave} className="space-y-4">
-                            <div>
-                                <label className="text-xs font-bold mb-2 block uppercase opacity-50 tracking-wider">Imagen del Producto</label>
-                                <div
-                                    style={S.dropzone}
-                                    className="group hover:border-primary/50 hover:bg-primary/5"
-                                    onClick={() => document.getElementById("fileInput")?.click()}
-                                >
-                                    {isUploading ? (
-                                        <div className="flex flex-col items-center gap-3 py-4 animate-pulse">
-                                            <div className="animate-spin h-8 w-8 border-3 border-primary border-t-transparent rounded-full" />
-                                            <span className="text-sm font-medium text-primary">Procesando imagen...</span>
-                                        </div>
-                                    ) : formData.imageUrl ? (
-                                        <div style={S.previewContainer} className="group">
-                                            <Image
-                                                src={formData.imageUrl}
-                                                alt="Preview"
-                                                fill
-                                                className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
-                                            />
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-2 backdrop-blur-sm">
-                                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                                                    <Plus className="w-6 h-6" />
+                        {/* Scrollable Content */}
+                        <div className="scrollbar-thin" style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
+                            <form id="productForm" onSubmit={handleSave} className="space-y-6">
+                                <div>
+                                    <label className="text-xs font-bold mb-2 block uppercase opacity-50 tracking-wider">Imagen del Producto</label>
+                                    <div
+                                        style={S.dropzone}
+                                        className="group hover:border-primary/50 hover:bg-primary/5"
+                                        onClick={() => document.getElementById("fileInput")?.click()}
+                                    >
+                                        {isUploading ? (
+                                            <div className="flex flex-col items-center gap-3 py-4 animate-pulse">
+                                                <div className="animate-spin h-8 w-8 border-3 border-primary border-t-transparent rounded-full" />
+                                                <span className="text-sm font-medium text-primary">Procesando imagen...</span>
+                                            </div>
+                                        ) : formData.imageUrl ? (
+                                            <div style={S.previewContainer}>
+                                                <Image
+                                                    src={formData.imageUrl}
+                                                    alt="Preview"
+                                                    fill
+                                                    className="object-contain p-2"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2">
+                                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
+                                                        <Plus className="w-6 h-6 text-white" />
+                                                    </div>
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white px-3 py-1 bg-black/50 rounded-full">Cambiar Imagen</span>
                                                 </div>
-                                                <span className="text-xs font-bold uppercase tracking-widest bg-primary px-3 py-1 rounded-full shadow-lg">Cambiar Imagen</span>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center gap-3 py-4 transition-transform group-hover:scale-110 duration-300">
-                                            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-primary/30 group-hover:bg-primary/10 transition-colors">
-                                                <ImageIcon className="h-8 w-8 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-3 py-4 transition-colors duration-200">
+                                                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-primary/50 group-hover:bg-primary/5 transition-all">
+                                                    <ImageIcon className="h-8 w-8 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-semibold">Subir fotografía</p>
+                                                    <p className="text-[10px] opacity-40 uppercase tracking-tight">JPG, PNG o WEBP (Recomendado 800x800)</p>
+                                                </div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-semibold">Subir fotografía</p>
-                                                <p className="text-[10px] opacity-40 uppercase tracking-tight">JPG, PNG o WEBP (Recomendado 800x800)</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <input
-                                        id="fileInput"
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleFileUpload}
-                                    />
+                                        )}
+                                        <input
+                                            id="fileInput"
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={handleFileUpload}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="col-span-2">
-                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Nombre</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="text-xs font-bold mb-1 block uppercase opacity-50">Nombre</label>
+                                        <input
+                                            style={S.input}
+                                            type="text"
+                                            required
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="text-xs font-bold mb-1 block uppercase opacity-50">Categoría</label>
+                                        <select
+                                            style={S.input}
+                                            required
+                                            value={formData.categoryId}
+                                            onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
+                                        >
+                                            <option value="">Seleccionar...</option>
+                                            {categories.map(c => (
+                                                <option key={c._id} value={c._id}>{c.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Corta</label>
                                     <input
                                         style={S.input}
                                         type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        value={formData.shortDescription}
+                                        onChange={e => setFormData({ ...formData, shortDescription: e.target.value })}
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Categoría</label>
-                                    <select
-                                        style={S.input}
-                                        required
-                                        value={formData.categoryId}
-                                        onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
-                                    >
-                                        <option value="">Seleccionar...</option>
-                                        {categories.map(c => (
-                                            <option key={c._id} value={c._id}>{c.name}</option>
-                                        ))}
-                                    </select>
+
+                                <div>
+                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Larga</label>
+                                    <textarea
+                                        style={{ ...S.input, height: 100, resize: "none" }}
+                                        value={formData.longDescription}
+                                        onChange={e => setFormData({ ...formData, longDescription: e.target.value })}
+                                    />
                                 </div>
-                            </div>
+                            </form>
+                        </div>
 
-                            <div>
-                                <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Corta</label>
-                                <input
-                                    style={S.input}
-                                    type="text"
-                                    value={formData.shortDescription}
-                                    onChange={e => setFormData({ ...formData, shortDescription: e.target.value })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Larga</label>
-                                <textarea
-                                    style={{ ...S.input, height: 80, resize: "none" }}
-                                    value={formData.longDescription}
-                                    onChange={e => setFormData({ ...formData, longDescription: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
+                        {/* Footer */}
+                        <div style={{ padding: "16px 24px", borderTop: "1px solid oklch(0.26 0.012 255)", background: "oklch(0.18 0.012 255 / 0.5)" }}>
+                            <div className="flex gap-3">
                                 <button
                                     type="button"
                                     onClick={closeModal}
                                     style={{
                                         flex: 1, padding: "12px", borderRadius: 12, border: "1px solid oklch(0.26 0.012 255)",
-                                        color: "white", fontWeight: 600
+                                        color: "white", fontWeight: 600, fontSize: 14, transition: "all 0.2s"
                                     }}
+                                    className="hover:bg-white/5 active:scale-[0.98]"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
+                                    form="productForm"
                                     disabled={isSaving || isUploading}
-                                    className="admin-btn-primary"
-                                    style={{ flex: 1, padding: "12px", borderRadius: 12, justifyContent: "center" }}
+                                    className="admin-btn-primary active:scale-[0.98]"
+                                    style={{ 
+                                        flex: 1, 
+                                        padding: "12px", 
+                                        borderRadius: 12, 
+                                        justifyContent: "center",
+                                        boxShadow: "0 4px 12px rgba(0,0,0,0.3)" // Reduce el brillo/glow original
+                                    }}
                                 >
                                     {isSaving ? "Guardando..." : (
                                         <span className="flex items-center gap-2">
@@ -579,7 +602,7 @@ export default function ProductosAdminPage() {
                                     )}
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}
@@ -587,8 +610,8 @@ export default function ProductosAdminPage() {
             {/* MODAL CATEGORIAS */}
             {isCatModalOpen && (
                 <div style={{
-                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
-                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 110,
+                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
                     padding: 20
                 }}>
                     <div style={{
@@ -597,7 +620,9 @@ export default function ProductosAdminPage() {
                     }}>
                         <button
                             onClick={() => setIsCatModalOpen(false)}
-                            style={{ position: "absolute", top: 16, right: 16, color: "white", padding: 4 }}
+                            style={{ position: "absolute", top: 16, right: 16, color: "white", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+                            className="hover:bg-white/10 hover:scale-110 active:scale-95"
+                            title="Cerrar"
                         >
                             <X style={{ width: 20, height: 20 }} />
                         </button>
@@ -625,7 +650,7 @@ export default function ProductosAdminPage() {
                                 </button>
                             </div>
 
-                            <div style={{
+                            <div className="scrollbar-thin" style={{
                                 maxHeight: 300, overflowY: "auto",
                                 border: "1px solid oklch(0.26 0.012 255)", borderRadius: 12,
                                 background: "oklch(0.19 0.012 255 / 0.3)"
@@ -658,7 +683,7 @@ export default function ProductosAdminPage() {
             )}
 
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
+        </>
     )
 }
 
