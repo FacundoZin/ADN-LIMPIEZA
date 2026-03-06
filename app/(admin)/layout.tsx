@@ -451,6 +451,8 @@ function MobileSidebar({
 //  AdminLayout — Layout raíz del panel administrativo
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { Toaster } from "sonner"
+
 export default function AdminLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -459,6 +461,7 @@ export default function AdminLayout({
 
     return (
         <div className="admin-shell">
+            <Toaster position="top-right" expand={false} richColors />
             {/* Sidebar — Desktop */}
             <div className="hidden lg:flex">
                 <AdminSidebar

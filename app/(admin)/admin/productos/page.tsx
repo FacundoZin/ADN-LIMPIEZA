@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react"
 import { Package, Plus, Search, Trash2, Edit2, RefreshCw, Tag, X, Save, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { toast } from "sonner"
 
 interface Category {
     _id: string
@@ -183,16 +184,25 @@ export default function ProductosAdminPage() {
 
     async function handleDelete(id: string, name: string) {
         if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return
+        
         setDeleting(id)
-        try {
+        
+        const deletePromise = async () => {
             const res = await fetch(`/api/admin/productos/${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("No se pudo eliminar")
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || "No se pudo eliminar")
+            }
             setProducts((prev) => prev.filter((p) => p._id !== id))
-        } catch (e: any) {
-            alert("Error: " + e.message)
-        } finally {
-            setDeleting(null)
+            return name
         }
+
+        toast.promise(deletePromise(), {
+            loading: `Eliminando ${name}...`,
+            success: (name) => `Producto "${name}" eliminado correctamente`,
+            error: (err) => `Error: ${err.message}`,
+            finally: () => setDeleting(null)
+        })
     }
 
     const filtered = products.filter((p) =>
@@ -407,29 +417,35 @@ export default function ProductosAdminPage() {
                                     {p.shortDescription ?? "—"}
                                 </span>
 
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
                                     <button
                                         onClick={() => openModal(p)}
+                                        className="hover:text-blue-400 hover:bg-blue-500/20 hover:scale-110 active:scale-95 text-white/50 bg-white/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]"
                                         style={{
-                                            padding: 6, borderRadius: 8, border: "none",
-                                            background: "transparent", cursor: "pointer",
-                                            color: "oklch(0.94 0.004 240 / 0.3)",
-                                            display: "flex", transition: "all 0.15s",
+                                            padding: 10, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)",
+                                            cursor: "pointer",
+                                            display: "flex", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                         }}
+                                        title="Editar producto"
                                     >
-                                        <Edit2 style={{ width: 15, height: 15 }} />
+                                        <Edit2 style={{ width: 18, height: 18 }} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(p._id, p.name)}
                                         disabled={deleting === p._id}
+                                        className="hover:text-red-400 hover:bg-red-500/20 hover:scale-110 active:scale-95 text-white/50 bg-white/5 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
                                         style={{
-                                            padding: 6, borderRadius: 8, border: "none",
-                                            background: "transparent", cursor: "pointer",
-                                            color: "oklch(0.94 0.004 240 / 0.3)",
-                                            display: "flex", transition: "all 0.15s",
+                                            padding: 10, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)",
+                                            cursor: "pointer",
+                                            display: "flex", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                                         }}
+                                        title="Eliminar producto"
                                     >
-                                        {deleting === p._id ? <span className="animate-spin">◌</span> : <Trash2 style={{ width: 15, height: 15 }} />}
+                                        {deleting === p._id ? (
+                                            <div className="w-[18px] h-[18px] border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+                                        ) : (
+                                            <Trash2 style={{ width: 18, height: 18 }} />
+                                        )}
                                     </button>
                                 </div>
                             </div>

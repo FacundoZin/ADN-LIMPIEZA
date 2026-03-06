@@ -64,12 +64,12 @@ export default async function ProductoPage({
         {/* Product Details */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
           {/* Product Image */}
-          <div className="lg:col-span-5 aspect-square relative overflow-hidden rounded-2xl bg-muted shadow-sm">
+          <div className="lg:col-span-5 aspect-video lg:aspect-square relative overflow-hidden rounded-2xl bg-muted/50 shadow-sm w-full lg:max-w-none">
             {imageUrl ? (
               <img
                 src={imageUrl || "/placeholder.svg"}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain p-4 lg:p-0 lg:object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -115,11 +115,11 @@ export default async function ProductoPage({
                 <WhatsAppButton
                   message={WHATSAPP_MESSAGES.product(product.name)}
                   size="lg"
-                  className="flex-1"
+                  className="w-full sm:flex-1"
                 >
                   Consultar por WhatsApp
                 </WhatsAppButton>
-                <Button variant="outline" size="lg" asChild>
+                <Button variant="outline" size="lg" asChild className="w-full sm:flex-1">
                   <Link href="/productos">Ver más productos</Link>
                 </Button>
               </div>
