@@ -39,12 +39,7 @@ const navItems = [
         icon: Package,
         description: "Gestionar catálogo",
     },
-    {
-        label: "Usuarios",
-        href: "/admin/usuarios",
-        icon: Users,
-        description: "Administrar accesos",
-    },
+
     {
         label: "Analíticas",
         href: "/admin/analiticas",
@@ -217,10 +212,7 @@ function AdminSidebar({
                             </div>
                             <div className="flex flex-col min-w-0">
                                 <span className="text-xs font-semibold text-white/80 truncate">
-                                    Diego Attar
-                                </span>
-                                <span className="text-[10px] text-white/30 truncate">
-                                    diegoattar@gmail.com
+                                    Administrador
                                 </span>
                             </div>
                         </div>
@@ -234,14 +226,7 @@ function AdminSidebar({
                         collapsed ? "flex-col items-center" : "items-center"
                     )}
                 >
-                    <Link
-                        href="/admin/usuarios"
-                        className="flex items-center justify-center gap-2 p-2 rounded-lg text-white/30 hover:text-white/70 hover:bg-white/10 transition-all duration-200"
-                        title="Configuración"
-                    >
-                        <Settings className="w-4 h-4 shrink-0" />
-                        {!collapsed && <span className="text-xs">Configuración</span>}
-                    </Link>
+
                     <LogoutButton collapsed={collapsed} />
                 </div>
             </div>
@@ -309,9 +294,6 @@ function AdminHeader({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
                     </div>
                     <div className="hidden sm:flex flex-col items-start">
                         <span className="text-xs font-semibold text-admin-text/80 leading-none">
-                            Diego Attar
-                        </span>
-                        <span className="text-[10px] text-admin-text/30 leading-none mt-0.5">
                             Administrador
                         </span>
                     </div>

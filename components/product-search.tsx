@@ -6,13 +6,13 @@ import { Search, X, Loader2, Check, ChevronDown, Filter } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectGroup,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Popover,
   PopoverContent,
@@ -30,35 +30,30 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
-  // Local state for categories (fetches on demand if not provided by server)
+  // Local state for categories
   const [categories, setCategories] = useState<Category[]>(initialCategories)
-  const [isLoadingCats, setIsLoadingCats] = useState(false)
-  const [hasFetched, setHasFetched] = useState(false)
 
   const [search, setSearch] = useState(searchParams.get("search") || "")
   const [category, setCategory] = useState(searchParams.get("category") || "all")
-  const [open, setOpen] = useState(false)
 
-  // Fetch categories from the API only if we don't have them or haven't fetched yet
-  const fetchCategories = useCallback(async () => {
-    if (hasFetched) return
-
-    setIsLoadingCats(true)
-    try {
-      const response = await fetch("/api/categories")
-      if (response.ok) {
-        const data = await response.json()
-        if (Array.isArray(data) && data.length > 0) {
-          setCategories(data)
-          setHasFetched(true)
-        }
-      }
-    } catch (error) {
-      console.error("Error al cargar categorías:", error)
-    } finally {
-      setIsLoadingCats(false)
+  // Sync with initial props if they change
+  useEffect(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      setCategories(initialCategories)
     }
-  }, [hasFetched])
+  }, [initialCategories])
+
+  // If component is on client, we can try a simple fetch if empty
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetch("/api/categories")
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) setCategories(data)
+        })
+        .catch(err => console.error("Error simple fetch:", err))
+    }
+  }, [])
 
   // Función de búsqueda sincronizada con la URL
   const handleSearch = (searchTerm = search, catId = category) => {
@@ -87,7 +82,6 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
   const handleCategoryChange = (currentValue: string) => {
     const newCategory = currentValue
     setCategory(newCategory)
-    setOpen(false)
 
     startTransition(() => {
       const params = new URLSearchParams()
@@ -152,69 +146,46 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
             {/* Separator on desktop */}
             <div className="hidden md:block w-px h-10 bg-border/50" />
 
-            {/* Category Selector with Dynamic Fetching */}
-            <Popover
-              open={open}
-              onOpenChange={(isOpen) => {
-                setOpen(isOpen)
-                if (isOpen) fetchCategories()
-              }}
+            {/* Category Selector */}
+            <Select
+              value={category}
+              onValueChange={handleCategoryChange}
             >
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full md:w-[260px] h-14 justify-between rounded-2xl px-5",
-                    "hover:bg-muted/40 transition-all duration-300",
-                    category !== "all" && "text-primary font-medium"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <Filter className={cn("w-4 h-4", category !== "all" ? "text-primary" : "text-muted-foreground")} />
-                    <span className="truncate text-sm">
-                      {category === "all" ? "Todas las categorías" : selectedCategoryName}
-                    </span>
-                  </div>
-                  {isLoadingCats ? (
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin opacity-50" />
-                  ) : (
-                    <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50 transition-transform duration-300", open && "rotate-180")} />
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-1 rounded-2xl glass-subtle shadow-soft-xl" align="end" sideOffset={8}>
-                <Command className="bg-transparent">
-                  <CommandInput placeholder="Filtrar categorías..." className="h-10 border-none focus:ring-0" />
-                  <CommandList className="scrollbar-thin max-h-[300px]">
-                    <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-                      No se encontraron resultados.
-                    </CommandEmpty>
-                    <CommandGroup heading="Categorías" className="p-1">
-                      <CommandItem
-                        value="all"
-                        onSelect={() => handleCategoryChange("all")}
-                        className="rounded-xl px-4 py-2 cursor-pointer mb-1"
-                      >
-                        <Check className={cn("mr-3 h-4 w-4", category === "all" ? "text-primary opacity-100" : "opacity-0")} />
-                        Todas las categorías
-                      </CommandItem>
-
-                      {categories.map((cat) => (
-                        <CommandItem
-                          key={cat.id}
-                          value={cat.name} // We use name for searching
-                          onSelect={() => handleCategoryChange(cat.id)}
-                          className="rounded-xl px-4 py-2 cursor-pointer mb-1"
-                        >
-                          <Check className={cn("mr-3 h-4 w-4", category === cat.id ? "text-primary opacity-100" : "opacity-0")} />
-                          {cat.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+              <SelectTrigger
+                className={cn(
+                  "w-full md:w-[260px] h-14 justify-between rounded-2xl px-5",
+                  "bg-muted/30 border-transparent hover:bg-muted/40 transition-all duration-300",
+                  "focus:ring-4 focus:ring-primary/5 focus:border-primary/30",
+                  category !== "all" && "text-primary font-medium"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Filter className={cn("w-4 h-4", category !== "all" ? "text-primary" : "text-muted-foreground")} />
+                  <span className="truncate text-sm">
+                    <SelectValue placeholder="Todas las categorías" />
+                  </span>
+                </div>
+              </SelectTrigger>
+              <SelectContent className="w-[280px] rounded-2xl bg-popover shadow-soft-xl border p-1" align="end">
+                <SelectGroup>
+                  <SelectItem 
+                    value="all" 
+                    className="rounded-xl px-4 py-3 cursor-pointer mb-1 hover:bg-accent focus:bg-accent transition-colors"
+                  >
+                    Todas las categorías
+                  </SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem
+                      key={cat.id}
+                      value={cat.id}
+                      className="rounded-xl px-4 py-3 cursor-pointer mb-1 hover:bg-accent focus:bg-accent transition-colors"
+                    >
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
             {/* Clear Filters (Dynamic) */}
             {hasFilters && (

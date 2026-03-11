@@ -18,10 +18,10 @@ export default async function AnaliticasAdminPage() {
     // Agrupar productos por categoría
     const byCategory = categories.map((cat: any) => ({
         name: cat.name,
-        count: products.filter((p: any) => p.category?._ref === cat._id).length,
+        count: products.filter((p: any) => p.categoryId === cat.id).length,
     })).sort((a: any, b: any) => b.count - a.count)
 
-    const maxCount = Math.max(...byCategory.map((c: any) => c.count), 1)
+    const totalCount = products.length > 0 ? products.length : 1
 
     const S = {
         surface: {
@@ -52,7 +52,7 @@ export default async function AnaliticasAdminPage() {
                     { label: "Categorías", value: categories.length, color: "oklch(0.72 0.14 250)" },
                     {
                         label: "Sin categoría",
-                        value: products.filter((p: any) => !p.category).length,
+                        value: products.filter((p: any) => !p.categoryId).length,
                         color: "oklch(0.78 0.18 70)"
                     },
                 ].map((stat) => (
@@ -77,7 +77,7 @@ export default async function AnaliticasAdminPage() {
                 {byCategory.length === 0 ? (
                     <div style={{ textAlign: "center", padding: "32px 0", color: "oklch(0.94 0.004 240 / 0.3)" }}>
                         <Tag style={{ width: 40, height: 40, margin: "0 auto 12px", opacity: 0.3 }} />
-                        <p className="text-sm">No hay categorías en Sanity todavía</p>
+                        <p className="text-sm">No hay categorías locales todavía</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -98,7 +98,7 @@ export default async function AnaliticasAdminPage() {
                                 }}>
                                     <div style={{
                                         height: "100%",
-                                        width: `${(cat.count / maxCount) * 100}%`,
+                                        width: `${(cat.count / totalCount) * 100}%`,
                                         background: "linear-gradient(90deg, oklch(0.75 0.18 55), oklch(0.75 0.18 55 / 0.6))",
                                         borderRadius: 8,
                                         transition: "width 0.8s ease",
@@ -153,20 +153,6 @@ export default async function AnaliticasAdminPage() {
                         <ExternalLink style={{ width: 13, height: 13 }} />
                         Vercel Analytics
                     </a>
-                    <Link
-                        href="/admin/usuarios"
-                        style={{
-                            display: "inline-flex", alignItems: "center", gap: 6,
-                            padding: "8px 14px", borderRadius: 10,
-                            background: "oklch(0.72 0.14 250 / 0.15)",
-                            border: "1px solid oklch(0.72 0.14 250 / 0.3)",
-                            color: "oklch(0.72 0.14 250)",
-                            textDecoration: "none", fontSize: 13,
-                        }}
-                    >
-                        <Activity style={{ width: 13, height: 13 }} />
-                        Gestionar Usuarios
-                    </Link>
                 </div>
             </div>
         </div>

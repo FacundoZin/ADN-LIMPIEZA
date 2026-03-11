@@ -1,38 +1,28 @@
 "use client"
 
+import { useTheme } from "next-themes"
 import { CloudMoon, CloudSun } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-    const initialTheme = storedTheme || systemTheme
-
-    setTheme(initialTheme)
-    document.documentElement.classList.toggle("dark", initialTheme === "dark")
   }, [])
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light"
-    setTheme(newTheme)
-    localStorage.setItem("theme", newTheme)
-    document.documentElement.classList.toggle("dark", newTheme === "dark")
-  }
+  if (!mounted) return <div className="h-10 w-10 shrink-0" />
 
-  if (!mounted) return <div className="h-9 w-9" />
+  const isDark = resolvedTheme === "dark"
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={toggleTheme}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
         "h-10 w-10 rounded-xl transition-all duration-500",
         "bg-transparent hover:bg-muted/80 text-muted-foreground hover:text-foreground",
@@ -45,13 +35,13 @@ export function ThemeToggle() {
         <CloudSun 
           className={cn(
             "absolute inset-0 h-5 w-5 transition-all duration-500 transform",
-            theme === "dark" ? "-rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
+            isDark ? "-rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
           )} 
         />
         <CloudMoon 
           className={cn(
             "absolute inset-0 h-5 w-5 transition-all duration-500 transform",
-            theme === "light" ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
+            !isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
           )} 
         />
       </div>

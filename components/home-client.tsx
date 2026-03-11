@@ -46,6 +46,26 @@ export function HomeClient() {
     const [loading, setLoading] = useState(false)
     const [categories, setCategories] = useState<{ _id: string, name: string }[]>([])
     const [loadingCategories, setLoadingCategories] = useState(true)
+    const [carouselSlides, setCarouselSlides] = useState<{ src: string, alt: string }[]>([])
+
+    useEffect(() => {
+        async function fetchCarousel() {
+            try {
+                const res = await fetch("/api/carousel")
+                if (res.ok) {
+                    const data = await res.json()
+                    const slides = data.map((img: any) => ({
+                        src: img.url,
+                        alt: img.alt || "Imagen ADN Limpieza"
+                    }))
+                    setCarouselSlides(slides)
+                }
+            } catch (error) {
+                console.error("Error fetching carousel images:", error)
+            }
+        }
+        fetchCarousel()
+    }, [])
 
     useEffect(() => {
         async function fetchCategories() {
@@ -83,22 +103,22 @@ export function HomeClient() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
 
             {/* Hero Section */}
-            <section className="relative min-h-[95vh] flex items-center overflow-hidden pt-20">
+            <section id="inicio" className="relative min-h-[85vh] flex items-center pt-24 lg:pt-28">
                 {/* Background Decor */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.08),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(249,115,22,0.05),transparent_50%)]" />
-                <div className="absolute inset-0 opacity-[0.02] pattern-grid text-primary" aria-hidden="true" />
-
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.08),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(249,115,22,0.05),transparent_50%)] dark:opacity-20 overflow-hidden" />
+                <div className="absolute inset-0 opacity-[0.02] pattern-grid text-primary overflow-hidden" aria-hidden="true" />
+                
                 {/* Floating Shapes */}
                 <div className="absolute top-1/4 right-[10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse-soft" />
                 <div className="absolute bottom-1/4 left-[5%] w-96 h-96 bg-orange-200/10 rounded-full blur-3xl animate-float" />
 
                 <div className="container mx-auto px-4 lg:px-8 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
                         <div className="max-w-2xl animate-fade-up">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border border-orange-100 mb-8 shadow-sm">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/40 mb-8 shadow-sm">
                                 <span className="relative flex h-2.5 w-2.5">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
@@ -106,11 +126,11 @@ export function HomeClient() {
                                 <span className="text-sm font-bold text-primary tracking-wide uppercase">Líderes en Limpieza Profesional</span>
                             </div>
 
-                            <h1 className="display-2xl mb-8 text-balance text-slate-900">
+                            <h1 className="display-2xl mb-8 text-balance text-foreground">
                                 Productos que <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">transforman</span> tu espacio
                             </h1>
 
-                            <p className="body-lg text-slate-600 mb-12 max-w-lg leading-relaxed">
+                            <p className="body-lg text-muted-foreground mb-12 max-w-lg leading-relaxed">
                                 Descubrí la potencia de la limpieza profesional en tu hogar o empresa con ADN LIMPIEZA. Más de 20 años innovando en soluciones efectivas.
                             </p>
 
@@ -126,17 +146,17 @@ export function HomeClient() {
                                 <WhatsAppButton
                                     size="lg"
                                     variant="outline"
-                                    className="h-16 px-10 text-lg rounded-2xl border-2 border-orange-100 hover:border-primary hover:bg-orange-50 transition-all duration-300 font-bold text-primary"
+                                    className="h-16 px-10 text-lg rounded-2xl border-2 border-orange-100 dark:border-orange-900/40 hover:border-primary hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all duration-300 font-bold text-primary"
                                 />
                             </div>
 
-                            <div className="grid grid-cols-3 gap-8 pt-10 border-t border-slate-100">
+                            <div className="grid grid-cols-3 gap-8 pt-10 border-t border-border/50">
                                 {stats.map((stat) => (
                                     <div key={stat.label} className="group">
-                                        <div className="text-4xl font-extrabold text-slate-900 group-hover:text-primary transition-colors duration-300">
+                                        <div className="text-4xl font-extrabold text-foreground group-hover:text-primary transition-colors duration-300">
                                             {stat.value}
                                         </div>
-                                        <div className="text-sm font-medium text-slate-500 uppercase tracking-wider mt-1">{stat.label}</div>
+                                        <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
@@ -144,9 +164,12 @@ export function HomeClient() {
 
                         <div className="relative group perspective-1000 hidden lg:block">
                             <div className="relative z-20 animate-float">
-                                <div className="rounded-[2.5rem] bg-gradient-to-br from-white to-orange-50 p-4 shadow-soft-xl border border-white/50 backdrop-blur-sm">
-                                    <div className="rounded-[2rem] overflow-hidden bg-white shadow-inner">
-                                        <HeroImage />
+                                <div className="rounded-[2.5rem] bg-gradient-to-br from-white to-orange-50 dark:from-slate-800 dark:to-slate-900 p-4 shadow-soft-xl border border-white/50 dark:border-white/10 backdrop-blur-sm">
+                                    <div className="rounded-[2rem] overflow-hidden bg-white dark:bg-slate-950 shadow-inner">
+                                        <HeroImage 
+                                            slides={carouselSlides.length > 0 ? carouselSlides : undefined} 
+                                            autoPlayInterval={3000}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -158,8 +181,8 @@ export function HomeClient() {
                             {/* Floating Card - Satisfaction */}
                             <div className={cn(
                                 "absolute -bottom-8 -left-8 p-6 z-30",
-                                "bg-white/90 backdrop-blur-xl rounded-[2rem]",
-                                "border border-orange-100 shadow-soft-xl",
+                                "bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-[2rem]",
+                                "border border-orange-100 dark:border-orange-900/40 shadow-soft-xl",
                                 "animate-bounce-slow hidden sm:block hover:scale-105 transition-transform duration-500"
                             )}>
                                 <div className="flex items-center gap-4">
@@ -167,8 +190,8 @@ export function HomeClient() {
                                         <CheckCircle2 className="w-7 h-7 text-primary" />
                                     </div>
                                     <div>
-                                        <div className="font-bold text-slate-900 text-lg">Garantía Total</div>
-                                        <div className="text-sm font-medium text-slate-500">Satisfacción 100%</div>
+                                        <div className="font-bold text-foreground text-lg">Garantía Total</div>
+                                        <div className="text-sm font-medium text-muted-foreground">Satisfacción 100%</div>
                                     </div>
                                 </div>
                             </div>
@@ -178,15 +201,15 @@ export function HomeClient() {
             </section>
 
             {/* Categories Section */}
-            <section className="py-24 bg-slate-50 relative overflow-hidden" id="categorias">
-                <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-white to-transparent" />
+            <section className="py-24 bg-muted/30 dark:bg-muted/10 relative overflow-hidden scroll-mt-12" id="categorias">
+                <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-background to-transparent" />
 
                 <div className="container mx-auto px-4 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                         <div className="max-w-2xl">
                             <div className="text-primary font-bold tracking-widest uppercase text-sm mb-3">Nuestros Productos</div>
-                            <h2 className="display-lg text-slate-900">Explorá por tipos</h2>
-                            <p className="body-md text-slate-500 mt-4 max-w-md">Soluciones específicas diseñadas para cada superficie y necesidad.</p>
+                            <h2 className="display-lg text-foreground">Explorá por tipos</h2>
+                            <p className="body-md text-muted-foreground mt-4 max-w-md">Soluciones específicas diseñadas para cada superficie y necesidad.</p>
                         </div>
                         <Link
                             href="/productos"
@@ -210,7 +233,7 @@ export function HomeClient() {
                                         key={cat._id}
                                         href={`/productos?category=${cat._id}`}
                                         className={cn(
-                                            "group relative p-10 rounded-[2.5rem] bg-white border border-slate-100",
+                                            "group relative p-10 rounded-[2.5rem] bg-card border border-border/50",
                                             "shadow-soft hover:shadow-soft-xl hover:border-primary/20",
                                             "transition-all duration-500 hover:-translate-y-3 flex flex-col items-center gap-6",
                                             "overflow-hidden"
@@ -218,20 +241,20 @@ export function HomeClient() {
                                     >
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full translate-x-16 -translate-y-16 group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-700" />
 
-                                        <div className="w-20 h-20 rounded-3xl bg-orange-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 group-hover:rotate-6 group-hover:shadow-glow shadow-sm">
+                                        <div className="w-20 h-20 rounded-3xl bg-orange-50 dark:bg-orange-950/20 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 group-hover:rotate-6 group-hover:shadow-glow shadow-sm">
                                             <Sparkles className="w-10 h-10 text-primary group-hover:text-white transition-colors" />
                                         </div>
 
                                         <div className="text-center relative z-10">
-                                            <h3 className="font-bold text-2xl text-slate-900 group-hover:text-primary transition-colors">
+                                            <h3 className="font-bold text-2xl text-foreground group-hover:text-primary transition-colors">
                                                 {cat.name}
                                             </h3>
-                                            <p className="text-slate-500 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+                                            <p className="text-muted-foreground text-sm mt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
                                                 Línea profesional
                                             </p>
                                         </div>
 
-                                        <div className="mt-2 py-2 px-6 rounded-full bg-slate-50 text-xs font-bold text-slate-600 flex items-center gap-2 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+                                        <div className="mt-2 py-2 px-6 rounded-full bg-muted/50 text-xs font-bold text-muted-foreground flex items-center gap-2 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
                                             Ver productos <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     </Link>
@@ -243,12 +266,12 @@ export function HomeClient() {
             </section>
 
             {/* Why Choose Us Section */}
-            <section className="py-24 bg-white">
+            <section className="py-24 bg-background transition-colors duration-500">
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-20">
                         <div className="text-primary font-bold tracking-widest uppercase text-sm mb-4">Diferenciales</div>
-                        <h2 className="display-lg text-slate-900 mb-6">¿Por qué ADN Limpieza?</h2>
-                        <p className="body-md text-slate-500">Nos enfocamos en brindar no solo productos, sino soluciones integrales de higiene con el asesoramiento de expertos.</p>
+                        <h2 className="display-lg text-foreground mb-6">¿Por qué ADN Limpieza?</h2>
+                        <p className="body-md text-muted-foreground">Nos enfocamos en brindar no solo productos, sino soluciones integrales de higiene con el asesoramiento de expertos.</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -285,19 +308,19 @@ export function HomeClient() {
                             const Icon = feature.icon
                             return (
                                 <div key={feature.title}
-                                    className="group p-10 rounded-[2.5rem] bg-white border border-slate-100 shadow-soft hover:shadow-soft-xl transition-all duration-500 hover:-translate-y-2"
+                                    className="group p-10 rounded-[2.5rem] bg-card border border-border/50 shadow-soft hover:shadow-soft-xl transition-all duration-500 hover:-translate-y-2"
                                 >
-                                    <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-8 group-hover:bg-primary transition-all duration-500 shadow-sm">
+                                    <div className="w-16 h-16 rounded-full bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center mb-8 group-hover:bg-primary transition-all duration-500 shadow-sm">
                                         <Icon className="w-8 h-8 text-primary group-hover:text-white transition-colors" />
                                     </div>
-                                    <h3 className="heading-lg mb-4 text-slate-900 flex items-center gap-2">
+                                    <h3 className="heading-lg mb-4 text-foreground flex items-center gap-2">
                                         {feature.title}
                                     </h3>
-                                    <p className="body-sm text-slate-500 leading-relaxed">{feature.description}</p>
+                                    <p className="body-sm text-muted-foreground leading-relaxed">{feature.description}</p>
 
-                                    <div className="mt-8 pt-8 border-t border-slate-50 flex items-center gap-3">
-                                        <div className="h-0.5 w-6 bg-orange-100 group-hover:w-12 group-hover:bg-primary transition-all duration-500" />
-                                        <span className="text-xs font-bold text-slate-400 group-hover:text-primary tracking-widest uppercase">Expertise</span>
+                                    <div className="mt-8 pt-8 border-t border-border/20 flex items-center gap-3">
+                                        <div className="h-0.5 w-6 bg-orange-100 dark:bg-orange-900/40 group-hover:w-12 group-hover:bg-primary transition-all duration-500" />
+                                        <span className="text-xs font-bold text-muted-foreground group-hover:text-primary tracking-widest uppercase">Expertise</span>
                                     </div>
                                 </div>
                             )
@@ -318,7 +341,7 @@ export function HomeClient() {
 
                         <div className="relative z-10 text-center max-w-3xl mx-auto">
                             <h2 className="display-lg text-white mb-8">¿Listo para transformar tu espacio?</h2>
-                            <p className="body-lg text-slate-400 mb-12 max-w-2xl mx-auto">
+                            <p className="body-lg text-slate-300 mb-12 max-w-2xl mx-auto">
                                 Nuestro equipo de expertos está listo para asesorarte. Contactanos hoy y descubrí la diferencia de una limpieza de alto nivel.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

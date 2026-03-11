@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 
 const navigation = [
-  { name: "Inicio", href: "/" },
-  { name: "Categorías", href: "/#categorias" },
+  { name: "Inicio", href: "/", id: "inicio" },
+  { name: "Categorías", href: "/#categorias", id: "categorias" },
   { name: "Productos", href: "/productos" },
   { name: "Nosotros", href: "/sobre-nosotros" },
 ]
@@ -23,6 +23,8 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
+  const [activeSegment, setActiveSegment] = useState("")
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -31,12 +33,46 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    // Only track sections on the home page
+    if (pathname !== "/") {
+      setActiveSegment("")
+      return
+    }
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -40% 0px", // Middle of screen
+      threshold: 0,
+    }
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSegment(entry.target.id)
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions)
+    
+    // Watch sections that have corresponding nav IDs
+    navigation.forEach((item) => {
+      if (item.id) {
+        const el = document.getElementById(item.id)
+        if (el) observer.observe(el)
+      }
+    })
+
+    return () => observer.disconnect()
+  }, [pathname])
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isScrolled
-          ? "py-3 bg-white/80 backdrop-blur-xl border-b border-border/40 shadow-soft"
+          ? "py-3 bg-white/80 dark:bg-black/40 backdrop-blur-xl border-b border-white/10 dark:border-white/10 shadow-soft"
           : "py-5 bg-transparent"
       )}
     >
@@ -50,8 +86,8 @@ export function Header() {
           >
             <div className={cn(
               "relative w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center transition-all duration-500",
-              "bg-white shadow-soft group-hover:shadow-glow group-hover:scale-105",
-              "border border-border group-hover:border-primary/50"
+              "bg-background/80 dark:bg-white/10 backdrop-blur-md shadow-soft group-hover:shadow-glow group-hover:scale-105",
+              "border border-border/50 dark:border-white/20 group-hover:border-primary/50"
             )}>
               <Image
                 src="/ADN-Limpieza-logo-redondo.png"
@@ -76,10 +112,13 @@ export function Header() {
           <nav className="hidden md:flex items-center">
             <div className={cn(
               "flex items-center gap-1 p-1 rounded-full transition-all duration-300",
-              isScrolled ? "bg-muted/30" : "bg-white/10 backdrop-blur-md border border-white/20"
+              isScrolled ? "bg-black/5 dark:bg-white/5" : "bg-black/10 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10"
             )}>
               {navigation.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = item.id 
+                  ? (pathname === "/" && activeSegment === item.id) || (pathname === "/" && activeSegment === "" && item.id === "inicio")
+                  : pathname === item.href
+                
                 return (
                   <Link
                     key={item.href}
@@ -88,7 +127,7 @@ export function Header() {
                       "relative px-5 py-2 text-sm font-semibold rounded-full transition-all duration-300",
                       isActive
                         ? "text-white"
-                        : "text-muted-foreground hover:text-primary"
+                        : "text-foreground/70 hover:text-primary dark:text-white/70 dark:hover:text-primary"
                     )}
                   >
                     {/* Active background pill */}
@@ -158,7 +197,10 @@ export function Header() {
                     {/* Navigation links */}
                     <nav className="flex-1 p-6 space-y-2">
                       {navigation.map((item, index) => {
-                        const isActive = pathname === item.href
+                        const isActive = item.id 
+                          ? (pathname === "/" && activeSegment === item.id) || (pathname === "/" && activeSegment === "" && item.id === "inicio")
+                          : pathname === item.href
+                        
                         return (
                           <SheetClose asChild key={item.href}>
                             <Link

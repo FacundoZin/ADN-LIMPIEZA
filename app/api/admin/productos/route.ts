@@ -5,7 +5,7 @@ import prisma from "@/lib/db";
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
-      include: { category: true },
+      include: { category: true, images: true },
       orderBy: { createdAt: "desc" },
     });
 
@@ -14,10 +14,19 @@ export async function GET() {
       _id: p.id,
       name: p.name,
       shortDescription: p.shortDescription,
+      longDescription: p.longDescription,
       category: p.category
         ? { _id: p.categoryId, name: p.category.name }
         : null,
-      imageUrl: p.imageUrl,
+      images:
+        p.images?.map((img: any) => ({
+          url: img.url,
+          isPrimary: img.isPrimary,
+        })) || [],
+      imageUrl:
+        p.images?.find((img: any) => img.isPrimary)?.url ||
+        p.images?.[0]?.url ||
+        null,
     }));
 
     return NextResponse.json(mappedProducts);
@@ -31,8 +40,14 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, shortDescription, longDescription, categoryId, imageUrl } =
-      body;
+    const {
+      name,
+      shortDescription,
+      longDescription,
+      categoryId,
+      images,
+      imageUrl,
+    } = body;
 
     if (!name || !categoryId) {
       return NextResponse.json(
@@ -47,7 +62,15 @@ export async function POST(req: Request) {
         shortDescription,
         longDescription,
         categoryId,
-        imageUrl,
+        images:
+          images && images.length > 0
+            ? {
+                create: images.map((img: any) => ({
+                  url: img.url,
+                  isPrimary: img.isPrimary,
+                })),
+              }
+            : undefined,
       },
     });
 

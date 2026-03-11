@@ -75,7 +75,7 @@ export default async function SobreNosotrosPage() {
         alt: img.alt || "Nuestro negocio",
       }))
       : [
-        { src: "/logo-adn.png", alt: "Local de ADN Limpieza" },
+        { src: "/LocalADN.jpeg", alt: "Local de ADN Limpieza" },
         { src: "/logo-adn.png", alt: "Nuestras instalaciones" },
         { src: "/logo-adn.png", alt: "Nuestros productos" },
       ]

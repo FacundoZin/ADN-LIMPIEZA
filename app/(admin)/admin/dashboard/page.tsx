@@ -21,7 +21,6 @@ export default async function DashboardPage() {
         { label: "Gestionar productos", href: "/admin/productos", icon: Package },
         { label: "Ver analíticas", href: "/admin/analiticas", icon: Tag },
         { label: "Sitio público", href: "/", icon: Eye },
-        { label: "Gestionar usuarios", href: "/admin/usuarios", icon: Activity },
     ]
 
     return (
@@ -169,18 +168,18 @@ export default async function DashboardPage() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl group"
-                                    style={{ color: "oklch(0.94 0.004 240 / 0.6)", transition: "all 0.2s" }}
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl group hover:bg-white/[0.04] transition-all duration-200 cursor-pointer"
+                                    style={{ color: "oklch(0.94 0.004 240 / 0.6)" }}
                                 >
-                                    <div style={{
+                                    <div className="group-hover:bg-orange-500/10 group-hover:text-orange-400 transition-colors" style={{
                                         width: 32, height: 32, borderRadius: 10,
                                         background: "oklch(0.19 0.012 255)",
                                         display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                                     }}>
                                         <Icon style={{ width: 16, height: 16 }} />
                                     </div>
-                                    <span className="text-sm font-medium">{link.label}</span>
-                                    <ArrowUpRight style={{ width: 14, height: 14, marginLeft: "auto", opacity: 0 }} />
+                                    <span className="text-sm font-medium group-hover:text-white transition-colors">{link.label}</span>
+                                    <ArrowUpRight className="ml-auto w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-orange-400 transition-all duration-300" />
                                 </Link>
                             )
                         })}

@@ -21,15 +21,15 @@ export async function DELETE(
   }
 }
 
-/** PATCH /api/admin/productos/[id] — actualiza un producto en la base de datos local */
-export async function PATCH(
+/** PUT /api/admin/productos/[id] — actualiza un producto en la base de datos local */
+export async function PUT(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   const { id } = params;
   try {
     const body = await req.json();
-    const { name, shortDescription, longDescription, categoryId, imageUrl } =
+    const { name, shortDescription, longDescription, categoryId, images, imageUrl } =
       body;
 
     const product = await prisma.product.update({
@@ -39,7 +39,10 @@ export async function PATCH(
         shortDescription,
         longDescription,
         categoryId,
-        imageUrl,
+        images: images ? {
+          deleteMany: {},
+          create: images.map((img: any) => ({ url: img.url, isPrimary: img.isPrimary }))
+        } : undefined,
       },
     });
 

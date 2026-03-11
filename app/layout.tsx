@@ -23,23 +23,12 @@ export const metadata: Metadata = {
     "Descubre nuestra amplia gama de productos de limpieza profesional. Más de 20 años brindando calidad garantizada para tu hogar y negocio.",
   generator: "v0.app",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/ADN-Limpieza-logo-redondo.png",
+    apple: "/ADN-Limpieza-logo-redondo.png",
   },
 }
+
+import { ThemeProvider } from "@/components/theme-provider"
 
 export default function RootLayout({
   children,
@@ -47,10 +36,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="scroll-smooth">
+    <html lang="es" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${inter.variable} ${dmSans.variable} font-sans antialiased`}>
-        {children}
-        <Analytics />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )

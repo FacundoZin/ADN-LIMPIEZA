@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { Package, Plus, Search, Trash2, Edit2, RefreshCw, Tag, X, Save, UploadCloud, Star, CheckCircle2 } from "lucide-react"
+import { Package, Plus, Search, Trash2, Edit2, RefreshCw, Tag, X, Save, UploadCloud, Star, CheckCircle2, ChevronDown } from "lucide-react"
 import Image from "next/image"
+import { ConfirmModal } from "@/components/ui/confirm-modal"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -20,6 +21,7 @@ interface Product {
     categoryId?: string
     category?: { _id: string; name: string }
     imageUrl?: string
+    images?: { url: string; isPrimary: boolean }[]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -36,8 +38,23 @@ export default function ProductosAdminPage() {
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCatModalOpen, setIsCatModalOpen] = useState(false)
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [newCatName, setNewCatName] = useState("")
+
+    const [confirmState, setConfirmState] = useState<{
+        isOpen: boolean;
+        title: string;
+        description: string;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: "",
+        description: "",
+        onConfirm: () => {},
+    })
+
+    const closeConfirm = () => setConfirmState(p => ({ ...p, isOpen: false }))
 
     // Form data
     const [formData, setFormData] = useState({
@@ -124,7 +141,7 @@ export default function ProductosAdminPage() {
                 longDescription: product.longDescription || "",
                 categoryId: product.categoryId || product.category?._id || "",
             })
-            setImages(product.imageUrl ? [{ url: product.imageUrl, isPrimary: true }] : [])
+            setImages(product.images || (product.imageUrl ? [{ url: product.imageUrl, isPrimary: true }] : []))
         } else {
             setEditingProduct(null)
             setFormData({ name: "", shortDescription: "", longDescription: "", categoryId: "" })
@@ -133,14 +150,19 @@ export default function ProductosAdminPage() {
         setIsModalOpen(true)
     }
 
-    function closeModal() { setIsModalOpen(false); setEditingProduct(null) }
+    function closeModal() { 
+        setIsModalOpen(false)
+        setEditingProduct(null)
+        setIsCategoryDropdownOpen(false)
+    }
 
     async function handleSave(e: React.FormEvent) {
         e.preventDefault()
         setIsSaving(true)
         try {
             const primaryImg = images.find(i => i.isPrimary) ?? images[0]
-            const body = { ...formData, imageUrl: primaryImg?.url ?? "" }
+            const cleanImages = images.map(i => ({ url: i.url, isPrimary: i.isPrimary }))
+            const body = { ...formData, imageUrl: primaryImg?.url ?? "", images: cleanImages }
             const method = editingProduct ? "PUT" : "POST"
             const url = editingProduct ? `/api/admin/productos/${editingProduct._id}` : "/api/admin/productos"
             const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
@@ -164,23 +186,39 @@ export default function ProductosAdminPage() {
     }
 
     async function handleDeleteCategory(id: string, name: string) {
-        if (!confirm(`¿Eliminar categoría "${name}"?`)) return
-        try {
-            const res = await fetch(`/api/admin/productos/categorias?id=${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error()
-            await fetchData()
-        } catch { alert("Error al eliminar") }
+        setConfirmState({
+            isOpen: true,
+            title: "Eliminar categoría",
+            description: `¿Estás seguro de que querés eliminar la categoría "${name}"?`,
+            onConfirm: async () => {
+                try {
+                    const res = await fetch(`/api/admin/productos/categorias?id=${id}`, { method: "DELETE" })
+                    if (!res.ok) throw new Error()
+                    await fetchData()
+                } catch { alert("Error al eliminar") }
+                finally { closeConfirm() }
+            }
+        });
     }
 
     async function handleDelete(id: string, name: string) {
-        if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return
-        setDeleting(id)
-        try {
-            const res = await fetch(`/api/admin/productos/${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error()
-            setProducts(prev => prev.filter(p => p._id !== id))
-        } catch { alert("Error al eliminar") }
-        finally { setDeleting(null) }
+        setConfirmState({
+            isOpen: true,
+            title: "Eliminar producto",
+            description: `¿Estás seguro de que querés eliminar el producto "${name}"? Esta acción no se puede deshacer.`,
+            onConfirm: async () => {
+                setDeleting(id)
+                try {
+                    const res = await fetch(`/api/admin/productos/${id}`, { method: "DELETE" })
+                    if (!res.ok) throw new Error()
+                    setProducts(prev => prev.filter(p => p._id !== id))
+                } catch { alert("Error al eliminar") }
+                finally { 
+                    setDeleting(null)
+                    closeConfirm() 
+                }
+            }
+        });
     }
 
     const filtered = products.filter(p =>
@@ -475,16 +513,62 @@ export default function ProductosAdminPage() {
                                                 value={formData.name}
                                                 onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} />
                                         </div>
-                                        <div className="col-span-2">
+                                        <div className="col-span-2 relative">
                                             <label className={C.label}>Categoría *</label>
-                                            <select className={C.input} required
-                                                value={formData.categoryId}
-                                                onChange={e => setFormData(p => ({ ...p, categoryId: e.target.value }))}>
-                                                <option value="">Seleccionar categoría…</option>
-                                                {categories.map(c => (
-                                                    <option key={c._id} value={c._id}>{c.name}</option>
-                                                ))}
-                                            </select>
+                                            
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                                                className={`${C.input} flex items-center justify-between text-left relative z-10 w-full focus:outline-none`}
+                                            >
+                                                <span className={formData.categoryId ? "text-white" : "text-white/40"}>
+                                                    {formData.categoryId 
+                                                        ? categories.find(c => c._id === formData.categoryId)?.name 
+                                                        : "Seleccionar categoría…"}
+                                                </span>
+                                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 text-white/40 ${isCategoryDropdownOpen ? "rotate-180" : ""}`} />
+                                            </button>
+                                            
+                                            {/* Backdrop para cerrar haciendo click afuera (básico) */}
+                                            {isCategoryDropdownOpen && (
+                                                <div 
+                                                    className="fixed inset-0 z-40" 
+                                                    onClick={() => setIsCategoryDropdownOpen(false)} 
+                                                />
+                                            )}
+
+                                            {/* Dropdown flotante */}
+                                            {isCategoryDropdownOpen && (
+                                                <div className="absolute top-full left-0 w-full mt-2 z-50 rounded-xl border border-white/10 bg-[#16161a] overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+                                                    <div className="max-h-60 overflow-y-auto w-full p-2 flex flex-col gap-1">
+                                                        {categories.length === 0 ? (
+                                                            <div className="px-3 py-4 text-sm text-white/30 text-center flex flex-col items-center gap-2">
+                                                                <Tag className="w-5 h-5 opacity-20" />
+                                                                No hay categorías
+                                                            </div>
+                                                        ) : (
+                                                            categories.map(c => (
+                                                                <button
+                                                                    key={c._id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setFormData(p => ({ ...p, categoryId: c._id }));
+                                                                        setIsCategoryDropdownOpen(false);
+                                                                    }}
+                                                                    className={`w-full text-left px-4 py-3 rounded-lg text-sm transition-all flex items-center justify-between ${
+                                                                        formData.categoryId === c._id 
+                                                                            ? "bg-orange-500/10 text-orange-400 font-bold" 
+                                                                            : "text-white/70 hover:bg-white/[0.06] hover:text-white"
+                                                                    }`}
+                                                                >
+                                                                    {c.name}
+                                                                    {formData.categoryId === c._id && <CheckCircle2 className="w-4 h-4" />}
+                                                                </button>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </section>
@@ -599,6 +683,15 @@ export default function ProductosAdminPage() {
                     </div>
                 </div>
             )}
+
+            {/* Confirm Modal Reutilizable */}
+            <ConfirmModal
+                isOpen={confirmState.isOpen}
+                onClose={closeConfirm}
+                onConfirm={confirmState.onConfirm}
+                title={confirmState.title}
+                description={confirmState.description}
+            />
         </div>
     )
 }

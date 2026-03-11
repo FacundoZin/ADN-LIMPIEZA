@@ -23,8 +23,8 @@ export default async function ProductosPage({
 
   // Filtrar productos según búsqueda y categoría de forma robusta
   const filteredProducts = products.filter((product) => {
-    const productCategory = product.category as any
-    const categoryId = productCategory?._id || productCategory?._ref
+    const productCategory = product.category
+    const categoryId = productCategory?.id
 
     const matchesSearch = search
       ? product.name.toLowerCase().includes(search.toLowerCase()) ||
