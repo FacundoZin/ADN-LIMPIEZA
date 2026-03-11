@@ -13,55 +13,48 @@
    Naranja ambar sofisticado + toques de azul confianza
    ----------------------------------------------------------------------------- */
 :root {
-  /* Core Brand - Naranja ambar sofisticado */
-  --primary: oklch(0.72 0.17 55);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Core Brand - Naranja Vibrante Professional */
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
 
-  /* Fondos con profundidad - toque azulado = sensación de limpieza */
-  --background: oklch(0.99 0.003 240);
-  --foreground: oklch(0.15 0.02 260);
+  /* Fondos con amplitud y limpieza */
+  --background: #ffffff;
+  --foreground: #1c1917;
 
-  /* Cards - blanco puro para contraste máximo */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 260);
+  /* Cards - Diseño limpio y minimalista */
+  --card: #ffffff;
+  --card-foreground: #1c1917;
 
   /* Popover */
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 260);
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
 
-  /* Secondary - neutro cálido sutil */
-  --secondary: oklch(0.97 0.005 60);
-  --secondary-foreground: oklch(0.15 0.02 260);
+  /* Secondary - Naranja muy suave para fondos */
+  --secondary: #fff7ed;
+  --secondary-foreground: #f97316;
 
-  /* Muted - para textos secundarios y fondos */
-  --muted: oklch(0.96 0.004 240);
-  --muted-foreground: oklch(0.45 0.02 260);
+  /* Muted - Gris claro para secciones */
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
 
-  /* Accent - Azul oscuro para confianza y contraste */
-  --accent: oklch(0.55 0.12 250);
-  --accent-foreground: oklch(0.99 0 0);
+  /* Accent - Acento naranja claro */
+  --accent: #fb923c;
+  --accent-foreground: #ffffff;
 
   /* States */
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
 
-  --success: oklch(0.65 0.18 155);
-  --success-foreground: oklch(0.99 0 0);
+  --success: #22c55e;
+  --success-foreground: #ffffff;
 
   /* Borders - ultra sutiles */
-  --border: oklch(0.92 0.005 260);
-  --input: oklch(0.92 0.005 260);
-  --ring: oklch(0.72 0.17 55);
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #f97316;
 
-  /* Charts */
-  --chart-1: oklch(0.72 0.17 55);
-  --chart-2: oklch(0.55 0.12 250);
-  --chart-3: oklch(0.65 0.18 155);
-  --chart-4: oklch(0.6 0.15 35);
-  --chart-5: oklch(0.7 0.14 280);
-
-  /* Radius - más redondeado = más amigable */
-  --radius: 0.875rem;
+  /* Radius - Bordes redondeados elegantes */
+  --radius: 1rem;
 }
 
 /* -----------------------------------------------------------------------------
@@ -427,6 +420,30 @@
 
   50% {
     opacity: 0.7;
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 3s infinite;
   }
 }
 

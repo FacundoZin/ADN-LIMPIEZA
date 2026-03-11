@@ -34,7 +34,7 @@ export async function loginAction(
     }
 
     // Credenciales correctas — crear sesión
-    const token = generateSessionToken(email)
+    const token = generateSessionToken()
     const store = cookies()
 
     store.set("admin-token", token, {

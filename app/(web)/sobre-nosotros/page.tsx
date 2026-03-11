@@ -16,25 +16,21 @@ export const metadata = {
 // Timeline milestones
 const milestones = [
   {
-    year: "2008",
     title: "El Comienzo",
     description: "Iniciamos como un pequeño emprendimiento familiar con una misión clara: ofrecer productos de limpieza de la más alta calidad.",
     icon: Sparkles,
   },
   {
-    year: "2012",
     title: "Crecimiento Sostenido",
     description: "Expandimos nuestra oferta de productos y establecimos relaciones con los mejores proveedores del mercado.",
     icon: TrendingUp,
   },
   {
-    year: "2018",
     title: "Nuevas Instalaciones",
     description: "Nos mudamos a instalaciones más amplias para mejor atender la creciente demanda de nuestros clientes.",
     icon: Building,
   },
   {
-    year: "Hoy",
     title: "Líderes del Sector",
     description: "Más de dos décadas brindando soluciones de limpieza profesional.",
     icon: Handshake,
@@ -79,9 +75,9 @@ export default async function SobreNosotrosPage() {
         alt: img.alt || "Nuestro negocio",
       }))
       : [
-        { src: "/placeholder.svg?key=team1", alt: "Nuestro equipo" },
-        { src: "/placeholder.svg?key=store1", alt: "Nuestras instalaciones" },
-        { src: "/placeholder.svg?key=products1", alt: "Nuestros productos" },
+        { src: "/logo-adn.png", alt: "Local de ADN Limpieza" },
+        { src: "/logo-adn.png", alt: "Nuestras instalaciones" },
+        { src: "/logo-adn.png", alt: "Nuestros productos" },
       ]
 
 
@@ -193,7 +189,7 @@ export default async function SobreNosotrosPage() {
 
                 return (
                   <div
-                    key={milestone.year}
+                    key={milestone.title}
                     className={cn(
                       "relative flex gap-6 md:gap-12 pb-12 last:pb-0",
                       "md:items-center",
@@ -210,8 +206,7 @@ export default async function SobreNosotrosPage() {
                         "hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300",
                         isEven ? "md:text-right" : "md:text-left"
                       )}>
-                        <span className="text-sm font-semibold text-primary">{milestone.year}</span>
-                        <h3 className="heading-md mt-1 mb-2">{milestone.title}</h3>
+                        <h3 className="heading-md mb-2">{milestone.title}</h3>
                         <p className="body-sm text-muted-foreground">{milestone.description}</p>
                       </div>
                     </div>
@@ -277,36 +272,7 @@ export default async function SobreNosotrosPage() {
         </div>
       </section>
 
-      {/* =========================================================================
-          GALLERY SECTION
-          ========================================================================= */}
-      {images.length > 1 && (
-        <section className="section-padding bg-muted/30">
-          <div className="container mx-auto px-4 lg:px-8">
 
-            <div className="text-center mb-12 animate-fade-up">
-              <h2 className="display-lg">Nuestras Instalaciones</h2>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-soft group"
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* =========================================================================
           CONTACT SECTION

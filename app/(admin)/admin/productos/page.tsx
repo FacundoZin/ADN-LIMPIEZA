@@ -1,15 +1,16 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import { Package, Plus, Search, Trash2, Edit2, RefreshCw, Tag, X, Save, Image as ImageIcon } from "lucide-react"
-import Link from "next/link"
+import { useEffect, useState, useRef } from "react"
+import { Package, Plus, Search, Trash2, Edit2, RefreshCw, Tag, X, Save, UploadCloud, Star, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
-import { toast } from "sonner"
 
-interface Category {
-    _id: string
-    name: string
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface Category { _id: string; name: string }
+
+interface ProductImage { url: string; isPrimary: boolean; uploading?: boolean }
 
 interface Product {
     _id: string
@@ -21,431 +22,294 @@ interface Product {
     imageUrl?: string
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function ProductosAdminPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState("")
     const [deleting, setDeleting] = useState<string | null>(null)
-    const [error, setError] = useState<string | null>(null)
 
-    // Modal State
+    // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCatModalOpen, setIsCatModalOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [newCatName, setNewCatName] = useState("")
+
+    // Form data
     const [formData, setFormData] = useState({
         name: "",
         shortDescription: "",
         longDescription: "",
         categoryId: "",
-        imageUrl: ""
     })
+    const [images, setImages] = useState<ProductImage[]>([])
     const [isSaving, setIsSaving] = useState(false)
-    const [isUploading, setIsUploading] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const fetchData = useCallback(async () => {
-        setLoading(true)
-        setError(null)
+    // ── Upload ────────────────────────────────────────────────────────────────
+
+    const uploadFile = async (file: File) => {
+        // Validations
+        const allowed = ["image/jpeg", "image/png", "image/webp"]
+        if (!allowed.includes(file.type)) { alert("Formato no permitido. Usá JPG, PNG o WEBP."); return }
+        if (file.size > 2 * 1024 * 1024) { alert("El archivo supera los 2MB."); return }
+
+        const tempId = Date.now().toString()
+        // Optimistic: add a placeholder
+        setImages(prev => [...prev, { url: tempId, isPrimary: prev.length === 0, uploading: true }])
+
+        const fd = new FormData()
+        fd.append("file", file)
         try {
-            const [prodRes, catRes] = await Promise.all([
+            const res = await fetch("/api/admin/upload", { method: "POST", body: fd })
+            if (!res.ok) throw new Error("Error al subir")
+            const data = await res.json()
+            setImages(prev => prev.map(img => img.url === tempId ? { ...img, url: data.url, uploading: false } : img))
+        } catch (e: any) {
+            alert("Error al subir: " + e.message)
+            setImages(prev => prev.filter(img => img.url !== tempId))
+        }
+    }
+
+    const handleFiles = (files: FileList | null) => {
+        if (!files) return
+        Array.from(files).forEach(uploadFile)
+    }
+
+    const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true) }
+    const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(false) }
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault(); setIsDragging(false)
+        handleFiles(e.dataTransfer.files)
+    }
+
+    const removeImage = (url: string) =>
+        setImages(prev => {
+            const filtered = prev.filter(img => img.url !== url)
+            if (filtered.length > 0 && !filtered.some(i => i.isPrimary)) filtered[0].isPrimary = true
+            return filtered
+        })
+
+    const setPrimary = (url: string) =>
+        setImages(prev => prev.map(img => ({ ...img, isPrimary: img.url === url })))
+
+    // ── Data ──────────────────────────────────────────────────────────────────
+
+    useEffect(() => { fetchData() }, [])
+
+    async function fetchData() {
+        setLoading(true)
+        try {
+            const [pRes, cRes] = await Promise.all([
                 fetch("/api/admin/productos"),
                 fetch("/api/admin/productos/categorias")
             ])
-
-            if (!prodRes.ok) throw new Error("Error al obtener productos")
-            const prods = await prodRes.json()
-            setProducts(prods)
-
-            if (catRes.ok) {
-                const cats = await catRes.json()
-                setCategories(cats)
-            }
-        } catch (e: any) {
-            setError(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }, [])
-
-    useEffect(() => {
-        fetchData()
-    }, [fetchData])
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        setIsUploading(true)
-        const uploadFormData = new FormData()
-        uploadFormData.append("file", file)
-
-        try {
-            const res = await fetch("/api/admin/upload", {
-                method: "POST",
-                body: uploadFormData
-            })
-            if (!res.ok) throw new Error("Error al subir archivo")
-            const data = await res.json()
-            setFormData(prev => ({ ...prev, imageUrl: data.url }))
-        } catch (e: any) {
-            alert("Error al subir imagen: " + e.message)
-        } finally {
-            setIsUploading(false)
-        }
+            setProducts(await pRes.json())
+            setCategories(await cRes.json())
+        } catch (e) { console.error(e) }
+        finally { setLoading(false) }
     }
 
-    const handleCreateCategory = async () => {
-        if (!newCatName.trim()) return
-        try {
-            const res = await fetch("/api/admin/productos/categorias", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: newCatName })
-            })
-            if (!res.ok) throw new Error("Error al crear categoría")
-            setNewCatName("")
-            fetchData() // Refresh
-        } catch (e: any) {
-            alert(e.message)
-        }
-    }
-
-    const handleDeleteCategory = async (id: string, name: string) => {
-        if (!confirm(`¿Eliminar la categoría "${name}"? solo si no tiene productos.`)) return
-        try {
-            const res = await fetch(`/api/admin/productos/categorias?id=${id}`, { method: "DELETE" })
-            if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || "No se pudo eliminar")
-            }
-            fetchData()
-        } catch (e: any) {
-            alert(e.message)
-        }
-    }
-
-    const openModal = (product: Product | null = null) => {
+    function openModal(product: Product | null = null) {
         if (product) {
             setEditingProduct(product)
             setFormData({
                 name: product.name,
                 shortDescription: product.shortDescription || "",
                 longDescription: product.longDescription || "",
-                categoryId: product.category?._id || product.categoryId || "",
-                imageUrl: product.imageUrl || ""
+                categoryId: product.categoryId || product.category?._id || "",
             })
+            setImages(product.imageUrl ? [{ url: product.imageUrl, isPrimary: true }] : [])
         } else {
             setEditingProduct(null)
-            setFormData({
-                name: "",
-                shortDescription: "",
-                longDescription: "",
-                categoryId: categories[0]?._id || "",
-                imageUrl: ""
-            })
+            setFormData({ name: "", shortDescription: "", longDescription: "", categoryId: "" })
+            setImages([])
         }
         setIsModalOpen(true)
     }
 
-    const closeModal = () => {
-        setIsModalOpen(false)
-        setEditingProduct(null)
-    }
+    function closeModal() { setIsModalOpen(false); setEditingProduct(null) }
 
-    const handleSave = async (e: React.FormEvent) => {
+    async function handleSave(e: React.FormEvent) {
         e.preventDefault()
         setIsSaving(true)
-        setError(null)
-
         try {
-            const url = editingProduct
-                ? `/api/admin/productos/${editingProduct._id}`
-                : "/api/admin/productos"
-
-            const method = editingProduct ? "PATCH" : "POST"
-
-            const res = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            })
-
-            if (!res.ok) throw new Error("Error al guardar el producto")
-
-            await fetchData() // Refresh list
+            const primaryImg = images.find(i => i.isPrimary) ?? images[0]
+            const body = { ...formData, imageUrl: primaryImg?.url ?? "" }
+            const method = editingProduct ? "PUT" : "POST"
+            const url = editingProduct ? `/api/admin/productos/${editingProduct._id}` : "/api/admin/productos"
+            const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+            if (!res.ok) throw new Error("Error al guardar")
+            await fetchData()
             closeModal()
-        } catch (e: any) {
-            setError(e.message)
-        } finally {
-            setIsSaving(false)
-        }
+        } catch (e: any) { alert(e.message) }
+        finally { setIsSaving(false) }
+    }
+
+    async function handleCreateCategory() {
+        if (!newCatName.trim()) return
+        try {
+            const res = await fetch("/api/admin/productos/categorias", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newCatName })
+            })
+            if (!res.ok) throw new Error()
+            setNewCatName(""); await fetchData()
+        } catch { alert("Error al crear categoría") }
+    }
+
+    async function handleDeleteCategory(id: string, name: string) {
+        if (!confirm(`¿Eliminar categoría "${name}"?`)) return
+        try {
+            const res = await fetch(`/api/admin/productos/categorias?id=${id}`, { method: "DELETE" })
+            if (!res.ok) throw new Error()
+            await fetchData()
+        } catch { alert("Error al eliminar") }
     }
 
     async function handleDelete(id: string, name: string) {
         if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return
-        
         setDeleting(id)
-        
-        const deletePromise = async () => {
+        try {
             const res = await fetch(`/api/admin/productos/${id}`, { method: "DELETE" })
-            if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || "No se pudo eliminar")
-            }
-            setProducts((prev) => prev.filter((p) => p._id !== id))
-            return name
-        }
-
-        toast.promise(deletePromise(), {
-            loading: `Eliminando ${name}...`,
-            success: (name) => `Producto "${name}" eliminado correctamente`,
-            error: (err) => `Error: ${err.message}`,
-            finally: () => setDeleting(null)
-        })
+            if (!res.ok) throw new Error()
+            setProducts(prev => prev.filter(p => p._id !== id))
+        } catch { alert("Error al eliminar") }
+        finally { setDeleting(null) }
     }
 
-    const filtered = products.filter((p) =>
+    const filtered = products.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         (p.category?.name ?? "").toLowerCase().includes(search.toLowerCase())
     )
 
-    // ─── Estilos inline para el dark theme ───────────────────────────────────────
-    const S = {
-        page: { color: "var(--admin-text)" },
-        surface: { background: "oklch(0.16 0.013 255)", border: "1px solid oklch(0.26 0.012 255)", borderRadius: 16 },
-        muted: { color: "oklch(0.94 0.004 240 / 0.4)" },
-        icon: { background: "oklch(0.19 0.012 255)", border: "1px solid oklch(0.26 0.012 255)", borderRadius: 10, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-        input: {
-            width: "100%", padding: "10px 12px", background: "oklch(0.19 0.012 255)",
-            border: "1px solid oklch(0.26 0.012 255)", borderRadius: 10, color: "white", outline: "none"
-        },
-        dropzone: {
-            border: "2px dashed oklch(0.26 0.012 255)",
-            borderRadius: 16,
-            padding: 32,
-            textAlign: "center" as const,
-            cursor: "pointer",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-            background: "oklch(0.19 0.012 255 / 0.5)",
-            position: "relative" as const,
-            overflow: "hidden" as const,
-            display: "flex",
-            flexDirection: "column" as const,
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: 180,
-            gap: 12
-        },
-        previewContainer: {
-            width: "100%",
-            height: "100%",
-            position: "absolute" as const,
-            top: 0,
-            left: 0,
-            background: "oklch(0.16 0.013 255)"
-        }
-    } as const
+    const isUploading = images.some(i => i.uploading)
+
+    // ── Styles ────────────────────────────────────────────────────────────────
+
+    const C = {
+        card: "rounded-2xl border border-white/[0.07] bg-[#111114]",
+        input: "w-full px-4 py-3 rounded-xl border border-white/10 bg-white/[0.03] text-white text-sm outline-none focus:border-orange-500/50 focus:bg-white/[0.05] transition-all placeholder:text-white/20",
+        label: "block text-[11px] font-semibold uppercase tracking-widest text-white/40 mb-1.5",
+        sectionTitle: "text-xs font-bold uppercase tracking-widest text-white/30 flex items-center gap-2",
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Render
+    // ─────────────────────────────────────────────────────────────────────────
 
     return (
-        <>
-            <div className="space-y-6 animate-fade-up" style={S.page}>
+        <div className="space-y-6" style={{ color: "var(--admin-text)" }}>
 
-            {/* Header */}
+            {/* ── Header ─────────────────────────────────────────────────────────── */}
             <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div>
                     <h1 className="text-2xl font-bold">Productos</h1>
-                    <p className="text-sm mt-1" style={S.muted}>
-                        {loading ? "Cargando…" : `${products.length} productos en catálogo local`}
+                    <p className="text-sm mt-1 text-white/40">
+                        {loading ? "Cargando…" : `${products.length} productos en catálogo`}
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={fetchData}
-                        title="Actualizar"
-                        style={{
-                            padding: "8px 12px", borderRadius: 10,
-                            border: "1px solid oklch(0.26 0.012 255)",
-                            background: "transparent", cursor: "pointer", color: "oklch(0.94 0.004 240 / 0.5)",
-                            display: "flex", alignItems: "center", gap: 6, fontSize: 13,
-                        }}
-                    >
-                        <RefreshCw style={{ width: 14, height: 14 }} />
+                    <button type="button" onClick={fetchData}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-transparent text-white/50 text-sm font-semibold hover:text-white hover:border-white/20 transition-all">
+                        <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                         Actualizar
                     </button>
-                    <button
-                        title="Gestionar Categorías"
-                        onClick={() => setIsCatModalOpen(true)}
-                        style={{
-                            padding: "8px 12px", borderRadius: 10,
-                            border: "1px solid oklch(0.26 0.012 255)",
-                            background: "transparent", cursor: "pointer", color: "oklch(0.94 0.004 240 / 0.5)",
-                            display: "flex", alignItems: "center", gap: 6, fontSize: 13,
-                        }}
-                    >
-                        <Tag style={{ width: 14, height: 14 }} />
+                    <button type="button" onClick={() => setIsCatModalOpen(true)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-transparent text-white/50 text-sm font-semibold hover:text-white hover:border-white/20 transition-all">
+                        <Tag className="w-4 h-4" />
                         Categorías
                     </button>
-                    <button
-                        className="admin-btn-primary"
-                        onClick={() => openModal()}
-                    >
-                        <Plus style={{ width: 16, height: 16 }} />
+                    <button type="button" onClick={() => openModal()}
+                        className="admin-btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold">
+                        <Plus className="w-5 h-5" />
                         Agregar Producto
                     </button>
                 </div>
             </div>
 
-            {/* Buscador */}
-            <div style={{ ...S.surface, padding: 16 }}>
-                <div style={{ position: "relative" }}>
-                    <Search style={{
-                        position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
-                        width: 16, height: 16, color: "oklch(0.94 0.004 240 / 0.3)",
-                    }} />
-                    <input
-                        type="text"
+            {/* ── Search ─────────────────────────────────────────────────────────── */}
+            <div className={`${C.card} p-3`}>
+                <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-30" />
+                    <input className={C.input} style={{ paddingLeft: 40 }}
                         placeholder="Buscar por nombre o categoría..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={{
-                            width: "100%", height: 40, paddingLeft: 40, paddingRight: 16,
-                            background: "oklch(0.19 0.012 255)", border: "1px solid oklch(0.26 0.012 255)",
-                            borderRadius: 10, color: "oklch(0.94 0.004 240)", fontSize: 14, outline: "none",
-                            boxSizing: "border-box",
-                        }}
-                    />
+                        value={search} onChange={e => setSearch(e.target.value)} />
                 </div>
             </div>
 
-            {/* Error */}
-            {error && (
-                <div style={{
-                    padding: 16, borderRadius: 12,
-                    background: "oklch(0.55 0.22 25 / 0.1)", border: "1px solid oklch(0.55 0.22 25 / 0.3)",
-                    color: "oklch(0.7 0.22 25)", fontSize: 14,
-                }}>
-                    ⚠ {error}
-                </div>
-            )}
-
-            {/* Tabla / Lista */}
-            <div style={{ ...S.surface, overflow: "hidden" }}>
+            {/* ── Product List ────────────────────────────────────────────────────── */}
+            <div className={C.card}>
                 {loading ? (
-                    <div style={{ padding: 64, textAlign: "center", color: "oklch(0.94 0.004 240 / 0.3)" }}>
-                        <div style={{
-                            width: 32, height: 32, borderRadius: "50%",
-                            border: "3px solid oklch(0.26 0.012 255)",
-                            borderTopColor: "oklch(0.75 0.18 55)",
-                            animation: "spin 0.7s linear infinite", margin: "0 auto 12px",
-                        }} />
-                        Cargando productos…
+                    <div className="py-20 flex flex-col items-center gap-4 text-white/25">
+                        <RefreshCw className="w-8 h-8 animate-spin" />
+                        <span className="text-sm">Cargando productos…</span>
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div style={{ padding: 64, textAlign: "center", color: "oklch(0.94 0.004 240 / 0.3)" }}>
-                        <Package style={{ width: 48, height: 48, margin: "0 auto 12px", opacity: 0.25 }} />
-                        <p className="text-sm mb-3">
-                            {search ? `Sin resultados para "${search}"` : "No hay productos registrados"}
-                        </p>
+                    <div className="py-20 flex flex-col items-center gap-4 text-white/25">
+                        <Package className="w-12 h-12 opacity-25" />
+                        <p className="text-sm">{search ? `Sin resultados para "${search}"` : "No hay productos registrados"}</p>
+                        <button type="button" onClick={() => openModal()} className="admin-btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold mt-2">
+                            <Plus className="w-4 h-4" /> Agregar primero
+                        </button>
                     </div>
                 ) : (
                     <>
-                        <div style={{
-                            display: "grid", gridTemplateColumns: "1fr 160px 200px 100px",
-                            padding: "10px 20px",
-                            borderBottom: "1px solid oklch(0.26 0.012 255)",
-                        }}>
-                            {["Producto", "Categoría", "Descripción", ""].map((h) => (
-                                <span key={h} style={{
-                                    fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                                    letterSpacing: "0.08em", color: "oklch(0.94 0.004 240 / 0.3)",
-                                }}>
-                                    {h}
-                                </span>
+                        {/* Table head */}
+                        <div className="grid px-5 py-3 border-b border-white/[0.06]"
+                            style={{ gridTemplateColumns: "1fr 150px 200px 90px" }}>
+                            {["Producto", "Categoría", "Descripción", ""].map(h => (
+                                <span key={h} className="text-[10px] font-bold uppercase tracking-widest text-white/25">{h}</span>
                             ))}
                         </div>
 
-                        {filtered.map((p) => (
-                            <div
-                                key={p._id}
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "1fr 160px 200px 100px",
-                                    padding: "14px 20px",
-                                    borderBottom: "1px solid oklch(0.26 0.012 255 / 0.5)",
-                                    alignItems: "center",
-                                    transition: "background 0.15s",
-                                }}
-                            >
-                                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                                    <div style={S.icon}>
+                        {/* Rows */}
+                        {filtered.map(p => (
+                            <div key={p._id}
+                                className="grid px-5 py-3.5 border-b border-white/[0.04] items-center hover:bg-white/[0.02] transition-colors"
+                                style={{ gridTemplateColumns: "1fr 150px 200px 90px" }}>
+
+                                {/* Thumbnail + name */}
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className="w-14 h-14 rounded-xl border border-white/[0.08] bg-[#0a0a0c] flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                                         {p.imageUrl ? (
-                                            <div style={{ position: "relative", width: 20, height: 20 }}>
-                                                <Image src={p.imageUrl} alt={p.name} fill className="object-contain" />
-                                            </div>
+                                            <Image src={p.imageUrl} alt={p.name} fill className="object-contain p-1" />
                                         ) : (
-                                            <Package style={{ width: 16, height: 16, color: "oklch(0.75 0.18 55 / 0.6)" }} />
+                                            <Package className="w-6 h-6 opacity-20" />
                                         )}
                                     </div>
-                                    <span style={{
-                                        fontSize: 14, fontWeight: 500, color: "oklch(0.94 0.004 240 / 0.9)",
-                                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                    }}>
-                                        {p.name}
-                                    </span>
+                                    <span className="text-sm font-semibold text-white truncate">{p.name}</span>
                                 </div>
 
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                {/* Category */}
+                                <div>
                                     {p.category ? (
-                                        <span style={{
-                                            display: "inline-flex", alignItems: "center", gap: 4,
-                                            padding: "2px 8px", borderRadius: 9999, fontSize: 11, fontWeight: 700,
-                                            background: "oklch(0.75 0.18 55 / 0.12)", color: "oklch(0.75 0.18 55)",
-                                        }}>
-                                            <Tag style={{ width: 10, height: 10 }} />
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-500/10 text-orange-400">
+                                            <Tag className="w-2.5 h-2.5" />
                                             {p.category.name}
                                         </span>
                                     ) : (
-                                        <span style={{ fontSize: 12, color: "oklch(0.94 0.004 240 / 0.25)" }}>Sin categoría</span>
+                                        <span className="text-xs text-white/20">Sin categoría</span>
                                     )}
                                 </div>
 
-                                <span style={{
-                                    fontSize: 12, color: "oklch(0.94 0.004 240 / 0.4)",
-                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                }}>
-                                    {p.shortDescription ?? "—"}
-                                </span>
+                                {/* Description */}
+                                <span className="text-xs text-white/35 truncate">{p.shortDescription ?? "—"}</span>
 
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
-                                    <button
-                                        onClick={() => openModal(p)}
-                                        className="hover:text-blue-400 hover:bg-blue-500/20 hover:scale-110 active:scale-95 text-white/50 bg-white/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-                                        style={{
-                                            padding: 10, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)",
-                                            cursor: "pointer",
-                                            display: "flex", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        }}
-                                        title="Editar producto"
-                                    >
-                                        <Edit2 style={{ width: 18, height: 18 }} />
+                                {/* Actions */}
+                                <div className="flex items-center justify-end gap-1.5">
+                                    <button type="button" onClick={() => openModal(p)}
+                                        className="p-2 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-all">
+                                        <Edit2 className="w-4 h-4" />
                                     </button>
-                                    <button
-                                        onClick={() => handleDelete(p._id, p.name)}
-                                        disabled={deleting === p._id}
-                                        className="hover:text-red-400 hover:bg-red-500/20 hover:scale-110 active:scale-95 text-white/50 bg-white/5 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
-                                        style={{
-                                            padding: 10, borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)",
-                                            cursor: "pointer",
-                                            display: "flex", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        }}
-                                        title="Eliminar producto"
-                                    >
-                                        {deleting === p._id ? (
-                                            <div className="w-[18px] h-[18px] border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
-                                        ) : (
-                                            <Trash2 style={{ width: 18, height: 18 }} />
-                                        )}
+                                    <button type="button" onClick={() => handleDelete(p._id, p.name)} disabled={deleting === p._id}
+                                        className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-40">
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -454,168 +318,230 @@ export default function ProductosAdminPage() {
                 )}
             </div>
 
-            </div>
-
-            {/* MODAL FORM */}
+            {/* ══════════════════════════════════════════════════════════════════════
+                MODAL — Crear / Editar Producto
+            ══════════════════════════════════════════════════════════════════════ */}
             {isModalOpen && (
-                <div style={{
-                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
-                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
-                    padding: "20px", backdropFilter: "blur(4px)"
-                }} className="animate-fade-in text-white">
-                    <div style={{
-                        ...S.surface, width: "100%", maxWidth: 550,
-                        position: "relative", maxHeight: "90vh", display: "flex", flexDirection: "column",
-                        overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
-                    }} className="animate-scale-in">
-                        
-                        {/* Header */}
-                        <div style={{ padding: "20px 24px", borderBottom: "1px solid oklch(0.26 0.012 255)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <h2 className="text-xl font-bold">
-                                {editingProduct ? "Editar Producto" : "Nuevo Producto"}
-                            </h2>
-                            <button
-                                onClick={closeModal}
-                                style={{ color: "white", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
-                                className="hover:bg-white/10 hover:scale-110 active:scale-95"
-                                title="Cerrar"
-                            >
-                                <X style={{ width: 20, height: 20 }} />
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                    style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(16px)" }}>
+                    <div className="w-full max-w-3xl flex flex-col max-h-[92vh] rounded-3xl border border-white/[0.1] bg-[#0e0e11] shadow-[0_40px_100px_rgba(0,0,0,0.8)] overflow-hidden">
+
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-8 py-5 border-b border-white/[0.07] flex-shrink-0">
+                            <div>
+                                <h2 className="text-lg font-bold text-white">
+                                    {editingProduct ? "Editar Producto" : "Nuevo Producto"}
+                                </h2>
+                                <p className="text-xs text-white/30 mt-0.5">
+                                    {editingProduct ? "Modificá los datos del producto" : "Completá la información para agregar un producto"}
+                                </p>
+                            </div>
+                            <button type="button" onClick={closeModal}
+                                className="p-2 rounded-xl text-white/30 hover:text-white hover:bg-white/[0.06] transition-all">
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Scrollable Content */}
-                        <div className="scrollbar-thin" style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
-                            <form id="productForm" onSubmit={handleSave} className="space-y-6">
-                                <div>
-                                    <label className="text-xs font-bold mb-2 block uppercase opacity-50 tracking-wider">Imagen del Producto</label>
-                                    <div
-                                        style={S.dropzone}
-                                        className="group hover:border-primary/50 hover:bg-primary/5"
-                                        onClick={() => document.getElementById("fileInput")?.click()}
-                                    >
-                                        {isUploading ? (
-                                            <div className="flex flex-col items-center gap-3 py-4 animate-pulse">
-                                                <div className="animate-spin h-8 w-8 border-3 border-primary border-t-transparent rounded-full" />
-                                                <span className="text-sm font-medium text-primary">Procesando imagen...</span>
-                                            </div>
-                                        ) : formData.imageUrl ? (
-                                            <div style={S.previewContainer}>
-                                                <Image
-                                                    src={formData.imageUrl}
-                                                    alt="Preview"
-                                                    fill
-                                                    className="object-contain p-2"
-                                                />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2">
-                                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                                                        <Plus className="w-6 h-6 text-white" />
-                                                    </div>
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white px-3 py-1 bg-black/50 rounded-full">Cambiar Imagen</span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center gap-3 py-4 transition-colors duration-200">
-                                                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-primary/50 group-hover:bg-primary/5 transition-all">
-                                                    <ImageIcon className="h-8 w-8 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <p className="text-sm font-semibold">Subir fotografía</p>
-                                                    <p className="text-[10px] opacity-40 uppercase tracking-tight">JPG, PNG o WEBP (Recomendado 800x800)</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <input
-                                            id="fileInput"
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={handleFileUpload}
-                                        />
-                                    </div>
-                                </div>
+                        {/* Modal Body — scrollable */}
+                        <div className="overflow-y-auto flex-1 px-8 py-7">
+                            <form onSubmit={handleSave} id="product-form" className="space-y-8">
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="col-span-2">
-                                        <label className="text-xs font-bold mb-1 block uppercase opacity-50">Nombre</label>
-                                        <input
-                                            style={S.input}
-                                            type="text"
-                                            required
-                                            value={formData.name}
-                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                        />
+                                {/* ─── SECCIÓN 1: IMÁGENES ──────────────────────────────────────────── */}
+                                <section className="space-y-4">
+                                    <div className={C.sectionTitle}>
+                                        <span className="w-5 h-px bg-white/20 block" />
+                                        Imágenes del Producto
                                     </div>
-                                    <div className="col-span-2">
-                                        <label className="text-xs font-bold mb-1 block uppercase opacity-50">Categoría</label>
-                                        <select
-                                            style={S.input}
-                                            required
-                                            value={formData.categoryId}
-                                            onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
+
+                                    {/* Drop Zone — only show when no images OR as append area */}
+                                    {images.filter(i => !i.uploading || i.url).length < 8 && (
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            onDragOver={handleDragOver}
+                                            onDragLeave={handleDragLeave}
+                                            onDrop={handleDrop}
+                                            className={`
+                                                relative flex flex-col items-center justify-center gap-3
+                                                rounded-2xl border-2 border-dashed cursor-pointer
+                                                py-10 px-6 text-center transition-all duration-200
+                                                ${isDragging
+                                                    ? "border-orange-500 bg-orange-500/[0.05]"
+                                                    : "border-white/10 bg-white/[0.01] hover:border-white/20 hover:bg-white/[0.03]"
+                                                }
+                                            `}
                                         >
-                                            <option value="">Seleccionar...</option>
-                                            {categories.map(c => (
-                                                <option key={c._id} value={c._id}>{c.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
+                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isDragging ? "bg-orange-500/20" : "bg-white/[0.04]"}`}>
+                                                <UploadCloud className={`w-7 h-7 transition-all ${isDragging ? "text-orange-400" : "text-white/25"}`} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-white/70">
+                                                    {isDragging ? "Soltá para subir" : "Arrastrar imágenes o hacer click para subir"}
+                                                </p>
+                                                <p className="text-xs text-white/30 mt-1">JPG, PNG, WEBP</p>
+                                            </div>
+                                            <div className="flex items-center gap-4 mt-1">
+                                                <span className="text-[11px] text-white/20">Tamaño recomendado: 1200 × 1200 px</span>
+                                                <span className="text-white/10">·</span>
+                                                <span className="text-[11px] text-white/20">Máx. 2 MB por imagen</span>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                <div>
-                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Corta</label>
                                     <input
-                                        style={S.input}
-                                        type="text"
-                                        value={formData.shortDescription}
-                                        onChange={e => setFormData({ ...formData, shortDescription: e.target.value })}
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        multiple
+                                        className="hidden"
+                                        onChange={e => { handleFiles(e.target.files); e.target.value = "" }}
                                     />
-                                </div>
 
-                                <div>
-                                    <label className="text-xs font-bold mb-1 block uppercase opacity-50">Descripción Larga</label>
-                                    <textarea
-                                        style={{ ...S.input, height: 100, resize: "none" }}
-                                        value={formData.longDescription}
-                                        onChange={e => setFormData({ ...formData, longDescription: e.target.value })}
-                                    />
-                                </div>
+                                    {/* Image Grid */}
+                                    {images.length > 0 && (
+                                        <div className="grid grid-cols-4 gap-3">
+                                            {images.map((img, idx) => (
+                                                <div key={img.url}
+                                                    className={`relative rounded-xl overflow-hidden border-2 transition-all group aspect-square
+                                                        ${img.isPrimary ? "border-orange-500" : "border-white/[0.08] hover:border-white/20"}`}
+                                                    style={{ background: "#0a0a0c" }}>
+
+                                                    {img.uploading ? (
+                                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#0a0a0c]">
+                                                            <RefreshCw className="w-5 h-5 text-orange-400 animate-spin" />
+                                                            <span className="text-[10px] text-white/30 uppercase tracking-wider">Subiendo…</span>
+                                                        </div>
+                                                    ) : (
+                                                        <Image src={img.url} alt={`Imagen ${idx + 1}`} fill className="object-contain p-2 transition-transform duration-300 group-hover:scale-105" />
+                                                    )}
+
+                                                    {/* Primary badge */}
+                                                    {img.isPrimary && (
+                                                        <div className="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-orange-500 text-white text-[9px] font-bold uppercase tracking-wider">
+                                                            <Star className="w-2.5 h-2.5 fill-white" />
+                                                            Principal
+                                                        </div>
+                                                    )}
+
+                                                    {/* Hover controls */}
+                                                    {!img.uploading && (
+                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                                                            {!img.isPrimary && (
+                                                                <button type="button" onClick={() => setPrimary(img.url)}
+                                                                    className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-orange-400 transition-all">
+                                                                    <Star className="w-3 h-3 fill-white" />
+                                                                    Principal
+                                                                </button>
+                                                            )}
+                                                            <button type="button" onClick={() => removeImage(img.url)}
+                                                                className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-red-500/80 text-white text-[10px] font-bold uppercase tracking-wider hover:bg-red-500 transition-all">
+                                                                <Trash2 className="w-3 h-3" />
+                                                                Eliminar
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+
+                                            {/* Add more tile */}
+                                            {images.length < 8 && (
+                                                <button type="button" onClick={() => fileInputRef.current?.click()}
+                                                    className="aspect-square rounded-xl border-2 border-dashed border-white/10 hover:border-white/20 hover:bg-white/[0.03] flex flex-col items-center justify-center gap-2 text-white/25 hover:text-white/50 transition-all">
+                                                    <Plus className="w-6 h-6" />
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider">Agregar</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {images.length === 0 && (
+                                        <p className="text-[11px] text-white/20 text-center">
+                                            Sin imágenes — la imagen principal se usará en la tienda
+                                        </p>
+                                    )}
+                                </section>
+
+                                {/* ─── SECCIÓN 2: INFORMACIÓN BÁSICA ───────────────────────────────── */}
+                                <section className="space-y-4">
+                                    <div className={C.sectionTitle}>
+                                        <span className="w-5 h-px bg-white/20 block" />
+                                        Información Básica
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className={C.label}>Nombre del producto *</label>
+                                            <input className={C.input}
+                                                type="text" required placeholder="Ej. Desengrasante Industrial XL"
+                                                value={formData.name}
+                                                onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className={C.label}>Categoría *</label>
+                                            <select className={C.input} required
+                                                value={formData.categoryId}
+                                                onChange={e => setFormData(p => ({ ...p, categoryId: e.target.value }))}>
+                                                <option value="">Seleccionar categoría…</option>
+                                                {categories.map(c => (
+                                                    <option key={c._id} value={c._id}>{c.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* ─── SECCIÓN 3: DESCRIPCIÓN ──────────────────────────────────────── */}
+                                <section className="space-y-4">
+                                    <div className={C.sectionTitle}>
+                                        <span className="w-5 h-px bg-white/20 block" />
+                                        Descripción
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className={C.label}>Descripción corta</label>
+                                            <input className={C.input}
+                                                type="text" placeholder="Ej. Perfecto para pisos industriales"
+                                                value={formData.shortDescription}
+                                                onChange={e => setFormData(p => ({ ...p, shortDescription: e.target.value }))} />
+                                        </div>
+                                        <div>
+                                            <label className={C.label}>Descripción larga</label>
+                                            <textarea className={C.input}
+                                                style={{ height: 120, resize: "none" }}
+                                                placeholder="Descripción detallada del producto, características técnicas, modo de uso…"
+                                                value={formData.longDescription}
+                                                onChange={e => setFormData(p => ({ ...p, longDescription: e.target.value }))} />
+                                        </div>
+                                    </div>
+                                </section>
                             </form>
                         </div>
 
-                        {/* Footer */}
-                        <div style={{ padding: "16px 24px", borderTop: "1px solid oklch(0.26 0.012 255)", background: "oklch(0.18 0.012 255 / 0.5)" }}>
-                            <div className="flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    style={{
-                                        flex: 1, padding: "12px", borderRadius: 12, border: "1px solid oklch(0.26 0.012 255)",
-                                        color: "white", fontWeight: 600, fontSize: 14, transition: "all 0.2s"
-                                    }}
-                                    className="hover:bg-white/5 active:scale-[0.98]"
-                                >
+                        {/* Modal Footer */}
+                        <div className="flex items-center justify-between px-8 py-5 border-t border-white/[0.07] flex-shrink-0 bg-[#0e0e11]">
+                            <div className="flex items-center gap-2 text-xs text-white/20">
+                                {isUploading && (
+                                    <>
+                                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-400" />
+                                        <span className="text-orange-300/60">Subiendo imágenes…</span>
+                                    </>
+                                )}
+                                {!isUploading && images.length > 0 && (
+                                    <>
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
+                                        <span>{images.length} imagen{images.length !== 1 ? "es" : ""} lista{images.length !== 1 ? "s" : ""}</span>
+                                    </>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button type="button" onClick={closeModal}
+                                    className="px-5 py-2.5 rounded-xl border border-white/10 text-white/60 text-sm font-semibold hover:text-white hover:border-white/20 transition-all">
                                     Cancelar
                                 </button>
-                                <button
-                                    type="submit"
-                                    form="productForm"
-                                    disabled={isSaving || isUploading}
-                                    className="admin-btn-primary active:scale-[0.98]"
-                                    style={{ 
-                                        flex: 1, 
-                                        padding: "12px", 
-                                        borderRadius: 12, 
-                                        justifyContent: "center",
-                                        boxShadow: "0 4px 12px rgba(0,0,0,0.3)" // Reduce el brillo/glow original
-                                    }}
-                                >
-                                    {isSaving ? "Guardando..." : (
-                                        <span className="flex items-center gap-2">
-                                            <Save style={{ width: 18, height: 18 }} />
-                                            {editingProduct ? "Guardar Cambios" : "Crear Producto"}
-                                        </span>
-                                    )}
+                                <button type="submit" form="product-form" disabled={isSaving || isUploading}
+                                    className="admin-btn-primary flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <Save className="w-4 h-4" />
+                                    {isSaving ? "Guardando…" : editingProduct ? "Guardar Cambios" : "Crear Producto"}
                                 </button>
                             </div>
                         </div>
@@ -623,71 +549,47 @@ export default function ProductosAdminPage() {
                 </div>
             )}
 
-            {/* MODAL CATEGORIAS */}
+            {/* ══════════════════════════════════════════════════════════════════════
+                MODAL — Gestionar Categorías
+            ══════════════════════════════════════════════════════════════════════ */}
             {isCatModalOpen && (
-                <div style={{
-                    position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
-                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
-                    padding: 20
-                }}>
-                    <div style={{
-                        ...S.surface, width: "100%", maxWidth: 400, padding: 24,
-                        position: "relative"
-                    }}>
-                        <button
-                            onClick={() => setIsCatModalOpen(false)}
-                            style={{ position: "absolute", top: 16, right: 16, color: "white", padding: 8, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
-                            className="hover:bg-white/10 hover:scale-110 active:scale-95"
-                            title="Cerrar"
-                        >
-                            <X style={{ width: 20, height: 20 }} />
-                        </button>
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4"
+                    style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(16px)" }}>
+                    <div className="w-full max-w-sm rounded-2xl border border-white/[0.1] bg-[#0e0e11] shadow-2xl overflow-hidden">
+                        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.07]">
+                            <h2 className="text-base font-bold text-white flex items-center gap-2">
+                                <Tag className="w-4 h-4 text-orange-400" />
+                                Gestionar Categorías
+                            </h2>
+                            <button type="button" onClick={() => setIsCatModalOpen(false)}
+                                className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/[0.06] transition-all">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
 
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <Tag className="text-primary" />
-                            Gestionar Categorías
-                        </h2>
-
-                        <div className="space-y-4">
+                        <div className="p-6 space-y-4">
                             <div className="flex gap-2">
-                                <input
-                                    style={S.input}
-                                    placeholder="Nueva categoría..."
+                                <input className={C.input} placeholder="Nueva categoría…"
                                     value={newCatName}
                                     onChange={e => setNewCatName(e.target.value)}
-                                    onKeyDown={e => e.key === "Enter" && handleCreateCategory()}
-                                />
-                                <button
-                                    onClick={handleCreateCategory}
-                                    className="admin-btn-primary"
-                                    style={{ padding: "0 16px", borderRadius: 10 }}
-                                >
-                                    <Plus style={{ width: 18, height: 18 }} />
+                                    onKeyDown={e => e.key === "Enter" && handleCreateCategory()} />
+                                <button type="button" onClick={handleCreateCategory}
+                                    className="admin-btn-primary px-4 rounded-xl flex-shrink-0">
+                                    <Plus className="w-5 h-5" />
                                 </button>
                             </div>
 
-                            <div className="scrollbar-thin" style={{
-                                maxHeight: 300, overflowY: "auto",
-                                border: "1px solid oklch(0.26 0.012 255)", borderRadius: 12,
-                                background: "oklch(0.19 0.012 255 / 0.3)"
-                            }}>
+                            <div className="rounded-xl border border-white/[0.07] overflow-hidden max-h-64 overflow-y-auto">
                                 {categories.length === 0 ? (
-                                    <p className="text-center py-8 text-sm opacity-30">No hay categorías</p>
+                                    <p className="text-center py-8 text-sm text-white/25">No hay categorías</p>
                                 ) : (
                                     categories.map(cat => (
-                                        <div
-                                            key={cat._id}
-                                            style={{
-                                                display: "flex", alignItems: "center", justifyContent: "space-between",
-                                                padding: "10px 16px", borderBottom: "1px solid oklch(0.26 0.012 255 / 0.5)"
-                                            }}
-                                        >
-                                            <span className="text-sm font-medium">{cat.name}</span>
-                                            <button
-                                                onClick={() => handleDeleteCategory(cat._id, cat.name)}
-                                                style={{ color: "oklch(0.7 0.22 25)", opacity: 0.6, padding: 4 }}
-                                            >
-                                                <Trash2 style={{ width: 14, height: 14 }} />
+                                        <div key={cat._id}
+                                            className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] transition-colors">
+                                            <span className="text-sm font-medium text-white/80">{cat.name}</span>
+                                            <button type="button" onClick={() => handleDeleteCategory(cat._id, cat.name)}
+                                                className="p-1.5 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                                                <Trash2 className="w-3.5 h-3.5" />
                                             </button>
                                         </div>
                                     ))
@@ -697,9 +599,6 @@ export default function ProductosAdminPage() {
                     </div>
                 </div>
             )}
-
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </>
+        </div>
     )
 }
-

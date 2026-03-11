@@ -21,15 +21,18 @@ export default async function ProductosPage({
   ])
   const { search, category } = await searchParams
 
-  // Filtrar productos según búsqueda
+  // Filtrar productos según búsqueda y categoría de forma robusta
   const filteredProducts = products.filter((product) => {
+    const productCategory = product.category as any
+    const categoryId = productCategory?._id || productCategory?._ref
+
     const matchesSearch = search
       ? product.name.toLowerCase().includes(search.toLowerCase()) ||
       (product.shortDescription ?? "").toLowerCase().includes(search.toLowerCase())
       : true
 
     const matchesCategory = category && category !== "all"
-      ? (product.category as any)?._ref === category
+      ? categoryId === category
       : true
 
     return matchesSearch && matchesCategory
@@ -64,7 +67,9 @@ export default async function ProductosPage({
       </section>
 
       {/* Search and Filter - Now integrated with overlap */}
-      <ProductSearch initialCategories={categories} />
+      <Suspense fallback={<div className="h-20" />}>
+        <ProductSearch initialCategories={categories} />
+      </Suspense>
 
       {/* Products Grid */}
       <section className="pb-20">

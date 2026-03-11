@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 
 const navigation = [
   { name: "Inicio", href: "/" },
+  { name: "Categorías", href: "/#categorias" },
   { name: "Productos", href: "/productos" },
   { name: "Nosotros", href: "/sobre-nosotros" },
 ]
@@ -35,8 +36,8 @@ export function Header() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         isScrolled
-          ? "py-3 glass border-b border-border/50 shadow-soft"
-          : "py-4 bg-transparent"
+          ? "py-3 bg-white/80 backdrop-blur-xl border-b border-border/40 shadow-soft"
+          : "py-5 bg-transparent"
       )}
     >
       <div className="container mx-auto px-4 lg:px-8">
@@ -48,28 +49,25 @@ export function Header() {
             className="flex items-center gap-3 group"
           >
             <div className={cn(
-              "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500",
-              "bg-gradient-to-br from-white/10 to-white/5",
-              "shadow-soft group-hover:shadow-glow group-hover:scale-110",
-              "border border-white/20 group-hover:border-primary/50"
+              "relative w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center transition-all duration-500",
+              "bg-white shadow-soft group-hover:shadow-glow group-hover:scale-105",
+              "border border-border group-hover:border-primary/50"
             )}>
               <Image
                 src="/ADN-Limpieza-logo-redondo.png"
                 alt="ADN Limpieza Logo"
                 fill
-                className="object-cover transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]"
+                className="object-cover p-1.5 transition-transform duration-700 ease-in-out group-hover:rotate-12"
                 priority
               />
-              {/* Subtle glow effect */}
-              <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
             <div className="hidden sm:block">
               <span className={cn(
-                "font-semibold text-lg tracking-tight transition-colors duration-300",
-                isScrolled ? "text-foreground" : "text-foreground",
+                "font-bold text-xl tracking-tight transition-colors duration-300",
+                "text-foreground",
                 "group-hover:text-primary"
               )}>
-                ADN Limpieza
+                ADN <span className="text-primary group-hover:text-foreground transition-colors">LIMPIEZA</span>
               </span>
             </div>
           </Link>
@@ -77,8 +75,8 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center">
             <div className={cn(
-              "flex items-center gap-1 p-1.5 rounded-full transition-all duration-300",
-              isScrolled ? "bg-muted/50" : "bg-background/50 backdrop-blur-sm"
+              "flex items-center gap-1 p-1 rounded-full transition-all duration-300",
+              isScrolled ? "bg-muted/30" : "bg-white/10 backdrop-blur-md border border-white/20"
             )}>
               {navigation.map((item) => {
                 const isActive = pathname === item.href
@@ -87,10 +85,10 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "relative px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
+                      "relative px-5 py-2 text-sm font-semibold rounded-full transition-all duration-300",
                       isActive
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        ? "text-white"
+                        : "text-muted-foreground hover:text-primary"
                     )}
                   >
                     {/* Active background pill */}
@@ -105,13 +103,12 @@ export function Header() {
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2">
-            {/* Desktop actions */}
-            <div className="hidden md:flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
               <WhatsAppButton
-                size="sm"
-                className="shadow-soft hover:shadow-glow transition-shadow duration-300"
+                size="default"
+                className="bg-primary hover:bg-primary/90 text-white shadow-soft transition-all duration-300 rounded-xl px-6 font-bold bg-gradient-to-r from-primary to-orange-400"
               >
                 <span className="hidden lg:inline">Contactar</span>
               </WhatsAppButton>
