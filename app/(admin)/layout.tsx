@@ -331,7 +331,7 @@ function MobileSidebar({
             {/* Backdrop */}
             <div
                 className={cn(
-                    "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300",
+                    "fixed inset-0 z-40 bg-black/60 lg:hidden transition-opacity duration-300",
                     open
                         ? "opacity-100 pointer-events-auto"
                         : "opacity-0 pointer-events-none"
@@ -460,12 +460,10 @@ export default function AdminLayout({
 
             {/* Área principal */}
             <div
-                className="admin-main"
-                style={{
-                    marginLeft: sidebarCollapsed
-                        ? "var(--admin-sidebar-w-collapsed)"
-                        : "var(--admin-sidebar-w)",
-                }}
+                className={cn(
+                    "admin-main",
+                    sidebarCollapsed ? "collapsed" : "expanded"
+                )}
             >
                 <AdminHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
                 <main className="admin-content">{children}</main>

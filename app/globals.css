@@ -822,7 +822,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  z-index: 30;
+  z-index: 60; /* Superior al backdrop z-50/40 */
   background-color: var(--admin-sidebar-bg);
   border-right: 1px solid var(--admin-border);
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -900,8 +900,13 @@
   transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.admin-main.collapsed {
+  margin-left: var(--admin-sidebar-w-collapsed);
+}
+
 @media (max-width: 1023px) {
-  .admin-main {
+  .admin-main,
+  .admin-main.collapsed {
     margin-left: 0 !important;
   }
 }
