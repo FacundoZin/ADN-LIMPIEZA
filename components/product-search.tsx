@@ -53,10 +53,10 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
         })
         .catch(err => console.error("Error simple fetch:", err))
     }
-  }, [])
+  }, [categories.length])
 
   // Función de búsqueda sincronizada con la URL
-  const handleSearch = (searchTerm = search, catId = category) => {
+  const handleSearch = useCallback((searchTerm = search, catId = category) => {
     startTransition(() => {
       const params = new URLSearchParams()
       if (searchTerm) params.set("search", searchTerm)
@@ -65,7 +65,7 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
       const queryString = params.toString()
       router.push(`/productos${queryString ? `?${queryString}` : ""}`, { scroll: false })
     })
-  }
+  }, [search, category, router])
 
   // Debounced search for name input
   useEffect(() => {
@@ -77,7 +77,7 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [search])
+  }, [search, category, handleSearch, searchParams])
 
   const handleCategoryChange = (currentValue: string) => {
     const newCategory = currentValue
@@ -232,7 +232,7 @@ export function ProductSearch({ initialCategories }: ProductSearchProps) {
           )}
           {search && (
             <div className="badge-accent animate-fade-in py-1 px-4 cursor-default">
-              Búsqueda: "{search}"
+              Búsqueda: &quot;{search}&quot;
               <button onClick={() => setSearch("")} className="ml-2 hover:text-foreground">
                 <X className="w-3 h-3" />
               </button>
