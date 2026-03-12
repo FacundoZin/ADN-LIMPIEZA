@@ -11,10 +11,14 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+# Variables para SQLite
+ENV DATABASE_URL="file:/app/data/dev.db"
+RUN mkdir -p /app/data
+
 RUN pnpm prisma generate
 RUN pnpm prisma db push --accept-data-loss
 RUN pnpm build
 
 EXPOSE 3000
 
-CMD sh -c "pnpm prisma migrate deploy && pnpm start"
+CMD sh -c "pnpm prisma db push --accept-data-loss && pnpm start"
