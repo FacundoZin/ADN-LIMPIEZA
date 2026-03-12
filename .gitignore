@@ -30,3 +30,7 @@ build/
 next.config.js.timestamp
 
 /generated/prisma
+
+# sqlite
+*.db
+*.sqlite

@@ -25,10 +25,12 @@ export interface CarouselImage {
 // Mapping from Prisma to simplified types
 function mapProduct(p: any): Product {
   const images =
-    p.images?.map((img: any) => ({
-      url: img.url,
-      isPrimary: img.isPrimary,
-    })) || [];
+    p.images
+      ?.map((img: any) => ({
+        url: img.url,
+        isPrimary: img.isPrimary,
+      }))
+      .sort((a: any, b: any) => (a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1)) || [];
 
   // Find the primary image or use the first one as fallback for imageUrl
   const primaryImage = images.find((img: any) => img.isPrimary) || images[0];

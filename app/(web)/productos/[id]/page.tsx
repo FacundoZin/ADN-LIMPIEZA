@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { WhatsAppButton } from "@/components/whatsapp-button";
+import { ProductGallery } from "@/components/product-gallery";
 import {
   getProductById,
   getProductsWithCategories,
@@ -45,7 +46,7 @@ export default async function ProductoPage({
   }
 
   const category = product.category;
-  const imageUrl = product.imageUrl;
+  const images = product.images || [];
 
   // Obtener productos relacionados de la misma categoría
   const allProducts = await getProductsWithCategories();
@@ -56,29 +57,18 @@ export default async function ProductoPage({
     .slice(0, 4);
 
   return (
-    <div className="min-h-screen pb-12 pt-28 lg:pt-32">
+    <div className="min-h-screen pb-12 pt-20 lg:pt-24">
       <div className="container mx-auto px-4">
 
         {/* Product Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
-          {/* Product Image */}
-          <div className="lg:col-span-5 aspect-video lg:aspect-square relative overflow-hidden rounded-2xl bg-muted/50 shadow-sm w-full lg:max-w-none">
-            {imageUrl ? (
-              <Image
-                src={imageUrl || "/placeholder.svg"}
-                alt={product.name}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Package className="h-32 w-32 text-muted-foreground" />
-              </div>
-            )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-16">
+          {/* Product Gallery (Smaller width = Smaller height) */}
+          <div className="lg:col-span-4 xl:col-span-4 w-full max-w-[400px] lg:max-w-none mx-auto lg:mx-0">
+            <ProductGallery images={images} productName={product.name} />
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col lg:col-span-7 h-full">
+          <div className="flex flex-col lg:col-span-8 xl:col-span-8 h-full">
             <div>
               <div className="flex items-center justify-between mb-6">
                 {category ? (
@@ -101,15 +91,15 @@ export default async function ProductoPage({
                 {product.name}
               </h1>
 
-              <div className="prose prose-lg max-w-none prose-neutral dark:prose-invert">
+              <div className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
                 <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
                   {product.longDescription}
                 </p>
               </div>
             </div>
 
-            {/* CTA Buttons & Features */}
-            <div className="mt-auto space-y-8 pt-8">
+            {/* CTA Buttons - Aligned to bottom */}
+            <div className="mt-auto pt-8 border-t border-border/50">
               <div className="flex flex-col sm:flex-row gap-4">
                 <WhatsAppButton
                   message={WHATSAPP_MESSAGES.product(product.name)}
@@ -122,8 +112,6 @@ export default async function ProductoPage({
                   <Link href="/productos">Ver más productos</Link>
                 </Button>
               </div>
-
-              {/* Product Features moved below */}
             </div>
           </div>
         </div>

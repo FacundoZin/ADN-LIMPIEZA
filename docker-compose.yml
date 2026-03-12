@@ -1,0 +1,26 @@
+services:
+  web_adn_limpieza:
+    build: .
+    container_name: web_adn_limpieza
+    restart: always
+
+    environment:
+      - NODE_ENV=production
+      - HOSTNAME=0.0.0.0
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+
+    volumes:
+      - prisma_data:/app/prisma
+    expose:
+      - "3000"
+    networks:
+      - clubmanagerapp-saas-_app_network
+
+volumes:
+  prisma_data:
+
+networks:
+  clubmanagerapp-saas-_app_network:
+    external: true
