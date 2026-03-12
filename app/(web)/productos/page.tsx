@@ -6,8 +6,8 @@ import { Loader2, Package } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export const metadata = {
-  title: "Productos — ADN Limpieza",
-  description: "Explora nuestra amplia gama de productos de limpieza profesional para hogares y negocios.",
+  title: "Productos",
+  description: "Explora nuestra amplia gama de productos de limpieza profesional. Desinfectantes, químicos y accesorios para el hogar y comercio.",
 }
 
 export default async function ProductosPage({

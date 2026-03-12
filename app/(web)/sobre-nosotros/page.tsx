@@ -9,8 +9,8 @@ import {
 import { cn } from "@/lib/utils"
 
 export const metadata = {
-  title: "Sobre Nosotros — ADN Limpieza",
-  description: "Conoce nuestra historia, valores y compromiso con la calidad en productos de limpieza profesional.",
+  title: "Sobre Nosotros",
+  description: "Conoce nuestra historia, valores y compromiso con la calidad en productos de limpieza profesional en San Francisco, Córdoba.",
 }
 
 // Timeline milestones
